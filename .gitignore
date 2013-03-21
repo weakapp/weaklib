@@ -1,4 +1,5 @@
 # built application files
+*.swp
 *.apk
 *.ap_
 
