@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,7 +27,6 @@ import javax.crypto.spec.DESKeySpec;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -160,6 +160,29 @@ public class Utils {
 		return pw;
 	}
 	
+	public static String md5(String data) {
+		String hashtext = null;
+		try {
+			MessageDigest digester = MessageDigest.getInstance("MD5");
+			digester.update(data.getBytes(Charset.forName("UTF8")));
+
+			byte[] digest = digester.digest();
+
+			BigInteger bigInt = new BigInteger(1, digest);
+
+			hashtext = bigInt.toString(16);
+
+			while (hashtext.length() < 32) {
+				hashtext = "0" + hashtext;
+			}
+		} catch (NoSuchAlgorithmException e) {
+			Log.e(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+
+		return hashtext;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static String cookiesStr(Map<String, String> cookies) {
 		StringBuilder sb = new StringBuilder();
@@ -184,7 +207,7 @@ public class Utils {
 	
 	public static Map<String, String> cookiesMap(String cookies) {
 		if (cookies == null) {
-			return null;
+			return new HashMap<String, String>();
 		}
 		
 		Map<String, String> map = new HashMap<String, String>();
@@ -305,18 +328,6 @@ public class Utils {
 				fos.close();
 			}
 		}
-	}
-
-	
-	public static ProgressDialog showProgressDialog(Context ctxt, String msg) {
-		ProgressDialog dialog = new ProgressDialog(ctxt);
-		dialog.setCancelable(true);
-		dialog.setCanceledOnTouchOutside(false);
-		dialog.setIndeterminate(true);
-		dialog.setMessage(msg);
-		dialog.show();
-		
-		return dialog;
 	}
 	
 }

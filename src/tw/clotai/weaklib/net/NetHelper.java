@@ -18,7 +18,7 @@ public class NetHelper {
 		int lastidx = host.lastIndexOf(".");
 
 		if (firstidx == lastidx) {
-			return host;
+			return ("."+host);
 		} else {
 			host = host.substring(firstidx);
 		}
