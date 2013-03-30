@@ -1,5 +1,12 @@
 package tw.clotai.weaklib.net;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 
 public class NetHelper {
@@ -24,4 +31,43 @@ public class NetHelper {
 		}
 		return host;
 	}
+	
+	public static boolean connected(Context context) {
+		boolean ret = false;
+
+		if (context == null) {
+			return false;
+		}
+		ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+		if (networkInfo == null) {
+			return ret;
+		}
+		if (networkInfo.isConnected()) {
+			ret = true;
+		}
+		return ret;
+	}
+	
+	public static String getEncodeURL(String url) {
+		StringBuilder sb = new StringBuilder();
+		Uri uri = Uri.parse(url);
+		
+		String path = uri.getPath();
+		List<String> paths = uri.getPathSegments();
+		
+		int index = url.indexOf(path);
+		
+		sb.append(url.substring(0, index));
+		for (String s: paths) {
+			try {
+				sb.append("/"+URLEncoder.encode(s, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				sb.append("/"+s);
+			}
+		}
+		return sb.toString();
+	}
+
 }
