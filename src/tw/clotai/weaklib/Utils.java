@@ -26,7 +26,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,6 +33,7 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 public class Utils {
@@ -231,10 +231,12 @@ public class Utils {
 		Toast.makeText(ctxt, s, Toast.LENGTH_SHORT).show();
 	}
 	
-	public static void deviceResolution(Activity activity, int[] resolution) {
-		Display display = activity.getWindowManager().getDefaultDisplay();
+	public static void deviceResolution(Context ctxt, int[] resolution) {
+		
+		Display d = ((WindowManager) ctxt.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+	
 		DisplayMetrics metrics = new DisplayMetrics();
-		display.getMetrics(metrics);
+		d.getMetrics(metrics);
 
 		resolution[0] = metrics.widthPixels;
 		resolution[1] = metrics.heightPixels;

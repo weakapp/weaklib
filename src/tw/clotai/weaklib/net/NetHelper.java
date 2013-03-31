@@ -54,11 +54,17 @@ public class NetHelper {
 		StringBuilder sb = new StringBuilder();
 		Uri uri = Uri.parse(url);
 		
-		String path = uri.getPath();
 		List<String> paths = uri.getPathSegments();
 		
-		int index = url.indexOf(path);
+		String schema = uri.getScheme();
 		
+		
+		if (schema == null) {
+			return url;
+		}
+		
+		int index = url.indexOf("/", schema.length()+3);
+
 		sb.append(url.substring(0, index));
 		for (String s: paths) {
 			try {
