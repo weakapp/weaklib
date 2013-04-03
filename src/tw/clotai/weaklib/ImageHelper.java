@@ -50,6 +50,14 @@ public class ImageHelper {
 		return sampleSize;
 	}
 	
+	public static Bitmap decodeBitmap(InputStream in) {
+		BitmapFactory.Options options = ImageHelper.getDefaultOptions();
+		
+		Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
+		
+		return bitmap;
+	}
+	
 	public static Bitmap decodeBitmap(String imageFileStr, 
 									BitmapFactory.Options options, 
 									int[] reso) {

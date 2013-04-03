@@ -45,7 +45,7 @@ public class CookieManager {
 
 	    android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
 	    cookieManager.removeAllCookie();
-	    cookieManager.setAcceptCookie(true); 
+	    cookieManager.setAcceptCookie(false); 
 	}
 	
 
