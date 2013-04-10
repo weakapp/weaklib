@@ -63,8 +63,7 @@ public class NetHelper {
 		List<String> paths = uri.getPathSegments();
 		
 		String schema = uri.getScheme();
-		
-		
+				
 		if (schema == null) {
 			return url;
 		}
@@ -79,6 +78,12 @@ public class NetHelper {
 				sb.append("/"+s);
 			}
 		}
+		
+		String query = uri.getQuery();
+		if (query != null) {
+			sb.append("?"+query);
+		}
+		
 		return sb.toString();
 	}
 	
