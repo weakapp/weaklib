@@ -1,8 +1,11 @@
 package tw.clotai.weaklib.net;
 
 import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -16,7 +19,10 @@ public class NetHelper {
 	 * I will return .yahoo.com as my domain
 	 */
 	public static String getDomain(String url) {
-		
+
+		if (url.startsWith(".")) {
+			return url;
+		}		
 		Uri uri = Uri.parse(url);
 
 		String host = uri.getHost();
@@ -75,5 +81,47 @@ public class NetHelper {
 		}
 		return sb.toString();
 	}
+	
+	public static String getBaseURL(String url) {
+		Uri uri = Uri.parse(url);
+		
+		String path = uri.getPath();
+		if (path == null) {
+			return url;
+		} else {
+			int index = url.indexOf(path);
+			
+			String ret  = url.substring(0,  index);
+			return ret;
+		}
+	}
 
+	
+	public static Map<String, String> parseCookies(String url, Map<String, List<String>> resHeaders) {
+    	Map<String, String> cookies_map = new HashMap<String, String>();
+    	
+        for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
+            String name = entry.getKey();
+            if (name == null) {
+                continue;
+            }
+
+            List<String> values = entry.getValue();
+            if (name.equalsIgnoreCase("Set-Cookie")) {
+                for (String value : values) {
+                    if (value == null)
+                        continue;
+
+                    List<HttpCookie> cookies = HttpCookie.parse(value);
+					for (HttpCookie cookie : cookies) {
+						cookies_map.put(cookie.getName(), cookie.getValue());
+					}
+					
+                }
+                break;
+            }
+        }
+        return cookies_map;
+	}
+	
 }
