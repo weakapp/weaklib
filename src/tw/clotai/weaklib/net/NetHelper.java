@@ -11,6 +11,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.util.Log;
 
 public class NetHelper {
 
@@ -26,6 +27,13 @@ public class NetHelper {
 		Uri uri = Uri.parse(url);
 
 		String host = uri.getHost();
+		
+		if (host == null) {
+			if (url != null) {
+				Log.e("NetHelper", url);
+			}
+			return null;
+		}
 
 		int firstidx = host.indexOf(".");
 		int lastidx = host.lastIndexOf(".");
@@ -79,11 +87,9 @@ public class NetHelper {
 			}
 		}
 		
-		String query = uri.getQuery();
-		if (query != null) {
-			sb.append("?"+query);
+		if (uri.getQuery() != null) {
+			sb.append("?"+uri.getQuery());
 		}
-		
 		return sb.toString();
 	}
 	
@@ -128,5 +134,4 @@ public class NetHelper {
         }
         return cookies_map;
 	}
-	
 }
