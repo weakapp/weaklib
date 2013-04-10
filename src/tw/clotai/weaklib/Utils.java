@@ -242,7 +242,6 @@ public class Utils {
 		resolution[1] = metrics.heightPixels;
 	}
 	
-	
 	public static String generateUniqueID(String url) {
 		byte[] md5 = null;
 		BigInteger bi = null;
@@ -331,5 +330,6 @@ public class Utils {
 			}
 		}
 	}
+	
 	
 }
