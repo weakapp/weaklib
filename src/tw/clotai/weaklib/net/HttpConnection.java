@@ -462,6 +462,10 @@ public class HttpConnection implements Connection {
         public String charset() {
             return charset;
         }
+        
+        public void charset(String charset) {
+        	this.charset = charset;
+        }
 
         public String contentType() {
             return contentType;

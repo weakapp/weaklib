@@ -358,6 +358,7 @@ public interface Connection {
          */
         public String charset();
 
+        public void charset(String charset);
         /**
          * Get the response content type (e.g. "text/html");
          * @return the response content type
