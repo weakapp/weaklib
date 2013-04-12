@@ -20,7 +20,10 @@ public class NetHelper {
 	 * I will return .yahoo.com as my domain
 	 */
 	public static String getDomain(String url) {
-
+		if (url == null) {
+			return null;
+		}
+		
 		if (url.startsWith(".")) {
 			return url;
 		}		
@@ -102,7 +105,11 @@ public class NetHelper {
 		} else {
 			int index = url.indexOf(path);
 			
-			String ret  = url.substring(0,  index);
+			if (index <= 0) {
+				return url;
+			}
+			
+			String ret  = url.substring(0,  index) +"/";
 			return ret;
 		}
 	}

@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -27,6 +29,8 @@ import javax.crypto.spec.DESKeySpec;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
@@ -39,23 +43,26 @@ import android.widget.Toast;
 public class Utils {
 	private final static String TAG = "Utils";
 
+	private static int OCTAL_MAX = 377;
+
 	private static final String HASH_ALGORITHM = "MD5";
 	private static final int RADIX = 10 + 26; // 10 digits + 26 letters
-	
+
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task, T... params) {
+	public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
+			T... params) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
 		} else {
 			task.execute(params);
 		}
 	}
-	
+
 	public static String encryptPass(String pass, String passphrase) {
 		if ((passphrase == null) || (pass == null)) {
 			return null;
 		}
-		
+
 		String s = pass;
 		try {
 			SecretKey key = null;
@@ -159,7 +166,7 @@ public class Utils {
 
 		return pw;
 	}
-	
+
 	public static String md5(String data) {
 		String hashtext = null;
 		try {
@@ -182,107 +189,163 @@ public class Utils {
 
 		return hashtext;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static String cookiesStr(Map<String, String> cookies) {
 		StringBuilder sb = new StringBuilder();
-		
+
 		boolean bFirst = true;
-		
+
 		Iterator<?> it = cookies.entrySet().iterator();
-		
+
 		while (it.hasNext()) {
 			Entry<String, String> entry = (Entry<String, String>) (it.next());
 
-        	if (bFirst) {
-        		bFirst = false;
-        		sb.append(entry.getKey() + "=" + entry.getValue());
-        	} else {
-        		sb.append("; "+entry.getKey() + "=" + entry.getValue());
-        	}
+			if (bFirst) {
+				bFirst = false;
+				sb.append(entry.getKey() + "=" + entry.getValue());
+			} else {
+				sb.append("; " + entry.getKey() + "=" + entry.getValue());
+			}
 		}
 
 		return sb.toString();
 	}
-	
+
 	public static Map<String, String> cookiesMap(String cookies) {
 		if (cookies == null) {
 			return new HashMap<String, String>();
 		}
-		
+
 		Map<String, String> map = new HashMap<String, String>();
-		
+
 		String[] params = cookies.split("; ");
-		for (String param: params) {
+		for (String param : params) {
 			String[] set = param.split("=");
 			if (set.length > 1) {
-				map.put(set[0], set[1]);	
+				map.put(set[0], set[1]);
 			}
 		}
 
 		return map;
 	}
-	
+
 	public static void toast(Context ctxt, int res) {
 		Toast.makeText(ctxt, res, Toast.LENGTH_SHORT).show();
 	}
-	
+
 	public static void toast(Context ctxt, String s) {
 		Toast.makeText(ctxt, s, Toast.LENGTH_SHORT).show();
 	}
-	
+
+	public static String version(Context context) {
+		String version = null;
+		try {
+			version = context.getPackageManager().getPackageInfo(
+					context.getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+		}
+		return version;
+	}
+
 	public static void deviceResolution(Context ctxt, int[] resolution) {
-		
-		Display d = ((WindowManager) ctxt.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-	
+
+		Display d = ((WindowManager) ctxt
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
 		DisplayMetrics metrics = new DisplayMetrics();
 		d.getMetrics(metrics);
 
 		resolution[0] = metrics.widthPixels;
 		resolution[1] = metrics.heightPixels;
 	}
-	
-	public static String generateUniqueID(String url) {
+
+	public static String generateUniqueID(String url, boolean ext) {
+
+		StringBuilder sb = new StringBuilder();
+
 		byte[] md5 = null;
 		BigInteger bi = null;
-		
+
 		try {
 			MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
 			digest.update(url.getBytes());
 			md5 = digest.digest();
-			
+
 			bi = new BigInteger(md5).abs();
-			
+
 		} catch (NoSuchAlgorithmException e) {
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 		if (bi == null) {
 			return null;
 		}
-		return bi.toString(RADIX);
+
+		sb.append(bi.toString(RADIX));
+
+		if (ext) {
+			Uri uri = Uri.parse(url);
+
+			String lastseq = uri.getLastPathSegment();
+
+			if (lastseq != null) {
+				int index = lastseq.lastIndexOf(".");
+				if (index != -1) {
+					sb.append(lastseq.substring(index));
+				}
+			}
+		}
+
+		return sb.toString();
 	}
-	
+
+	public static String getImageCahcePath(Context c) {
+		return getImageCahcePath(c, null);
+	}
+
 	public static String getImageCahcePath(Context c, String suffix) {
 		if (c == null) {
 			return null;
 		}
-		
+
+		boolean external = false;
 		File appCacheDir = null;
-		
+		File packageDir = null;
+
 		/** try to cache on external storage **/
-		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			File dataDir = new File(new File(Environment.getExternalStorageDirectory(), "Android"), "data");
-			
-			File packageDir = new File(dataDir, c.getPackageName());
-			
-			appCacheDir = new File(new File(new File(packageDir, "cache"), "images"), suffix);
-			
-			if (!appCacheDir.exists()) {
-				if (!appCacheDir.mkdirs()) {
-					appCacheDir = null;
-				} else {
+		if (Environment.getExternalStorageState().equals(
+				android.os.Environment.MEDIA_MOUNTED)) {
+			File dataDir = new File(new File(
+					Environment.getExternalStorageDirectory(), "Android"),
+					"data");
+
+			packageDir = new File(dataDir, c.getPackageName());
+
+			if (suffix != null) {
+				appCacheDir = new File(new File(new File(packageDir, "cache"),
+						"images"), suffix);
+			} else {
+				appCacheDir = new File(new File(packageDir, "cache"), "images");
+			}
+			external = true;
+		}
+
+		if (appCacheDir == null) {
+			if (suffix != null) {
+				appCacheDir = new File(new File(c.getCacheDir(), "images"),
+						suffix);
+			} else {
+				appCacheDir = new File(c.getCacheDir(), "images");
+			}
+		}
+
+		if (!appCacheDir.exists()) {
+			if (!appCacheDir.mkdirs()) {
+				appCacheDir = null;
+			} else {
+				if (external) {
 					try {
 						new File(packageDir, ".nomedia").createNewFile();
 					} catch (IOException e) {
@@ -290,11 +353,9 @@ public class Utils {
 				}
 			}
 		}
-
 		if (appCacheDir == null) {
-			appCacheDir = new File(new File(c.getCacheDir(), "images"), suffix);
+			return null;
 		}
-		
 		return appCacheDir.getAbsolutePath();
 	}
 
@@ -330,6 +391,53 @@ public class Utils {
 			}
 		}
 	}
-	
-	
+
+	public static String octalTranslate(final CharSequence input) {
+		if (input == null) {
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		int index = 0;
+		int length = input.length();
+
+		while (index < length) {
+			do {
+				if (index < (length - 1) && input.charAt(index) == '\\'
+						&& Character.isDigit(input.charAt(index + 1))) {
+					// if (index < (length - 1) &&
+					// Character.isDigit(input.charAt(index + 1))) {
+					final int start = index + 1;
+
+					int end = index + 2;
+					while (end < length && Character.isDigit(input.charAt(end))) {
+						end++;
+						if (Integer.parseInt(input.subSequence(start, end)
+								.toString(), 10) > OCTAL_MAX) {
+							end--;
+							break;
+						}
+					}
+					// System.out.println("input.subSequence(start, end).toString():"+input.subSequence(start,
+					// end).toString());
+					sb.append("%"
+							+ Integer.toHexString(Integer.parseInt(input
+									.subSequence(start, end).toString(), 8)));
+					index = end;
+					break;
+				}
+				int t = input.charAt(index);
+				sb.append("%" + Integer.toHexString(t));
+				index++;
+			} while (false);
+		}
+
+		try {
+			String s = URLDecoder.decode(sb.toString(), "UTF-8");
+			return s;
+		} catch (UnsupportedEncodingException e) {
+		}
+
+		return sb.toString();
+	}
+
 }

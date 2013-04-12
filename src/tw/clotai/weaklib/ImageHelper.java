@@ -70,9 +70,15 @@ public class ImageHelper {
 		int maxW = reso[0];
 		int maxH = reso[1];
 		
+		File file = new File(imageFileStr);
+		if (!file.exists() || !file.canRead()) {
+			Log.e(TAG, "Image not exist or can't read.["+file.getAbsolutePath()+"]");
+			return null;
+		}
+		
 		try {
 			try {
-				in = new FileInputStream(new File(imageFileStr));
+				in = new FileInputStream(file);
 				bitmap = BitmapFactory.decodeStream(in, null, options);
 			} finally {
 				if (in != null) {
@@ -80,55 +86,53 @@ public class ImageHelper {
 					in = null;
 				}
 			}
+			
+			if (bitmap == null) {
+				Log.e(TAG, "Decode image failed.");
+				/** if decode this image failed, assume this file is corrupted. **/
+				file.delete();
+				return null;
+			}
 
-			if (bitmap != null) {
+			float scale = 0;
+			int newWidth = 0;
+			int newHeight = 0;
 
-				float scale = 0;
-				int newWidth = 0;
-				int newHeight = 0;
+			scale = (Math.max(bitmap.getWidth(), bitmap.getHeight()) * 1.0f)
+					/ (Math.max(maxW, maxH) * 1.0f);
 
-				scale = (Math.max(bitmap.getWidth(), bitmap.getHeight()) * 1.0f)
-						/ (Math.max(maxW, maxH) * 1.0f);
+			if (scale > 1) {
+				newWidth = (int) (bitmap.getWidth() / scale);
+				newHeight = (int) (bitmap.getHeight() / scale);
 
-				if (scale > 1) {
-					newWidth = (int) (bitmap.getWidth() / scale);
-					newHeight = (int) (bitmap.getHeight() / scale);
-
-					if ((newWidth != 0) && (newHeight != 0)) {
-						newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
-								newHeight, true);
-						if (newBitmap != bitmap) {
-							bitmap.recycle();
-							bitmap = null;
-						}
-
-					} else {
-						newBitmap = bitmap;
+				if ((newWidth != 0) && (newHeight != 0)) {
+					newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+					if (newBitmap != bitmap) {
+						bitmap.recycle();
+						bitmap = null;
 					}
+
 				} else {
 					newBitmap = bitmap;
 				}
-				bitmap = null;
-				ret = newBitmap;
+			} else {
+				newBitmap = bitmap;
 			}
+			bitmap = null;
+			ret = newBitmap;
+
 		} catch (OutOfMemoryError error) {
-			if (null != bitmap) {
-				bitmap.recycle();
-				bitmap = null;
-			}
-			if (null != newBitmap) {
-				newBitmap.recycle();
-				newBitmap = null;
-			}
+			if (null != bitmap) bitmap.recycle();
+			if (null != newBitmap) newBitmap.recycle();
+			if (ret != null) ret.recycle();
 			
-			if (ret != null) {
-				ret.recycle();
-				ret = null;
-			}
+			ret = null;
+			newBitmap = null;
+			bitmap = null;
 			System.gc();
 
 		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "IOException: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return ret;
