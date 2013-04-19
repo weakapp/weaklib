@@ -100,11 +100,10 @@ public class NetHelper {
 		Uri uri = Uri.parse(url);
 		
 		String path = uri.getPath();
-		if (path == null) {
+		if ((path == null) || (path.trim().length() == 0)) {
 			return url;
 		} else {
-			int index = url.indexOf(path);
-			
+			int index = url.lastIndexOf(path);
 			if (index <= 0) {
 				return url;
 			}
