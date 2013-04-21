@@ -106,6 +106,8 @@ public interface Connection {
      * @return this Connection, for chaining
      */
     public Connection cookies(Map<String, String> cookies);
+    
+    public Connection charset(String charset);
 
     /**
      * Execute the request as a GET, and parse the result.
@@ -328,6 +330,9 @@ public interface Connection {
          */
         public Request data(KeyVal keyval);
 
+        public String charset();
+        public void charset(String charset);
+        
         /**
          * Get all of the request's data parameters
          * @return collection of keyvals

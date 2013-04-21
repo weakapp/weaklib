@@ -6,6 +6,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -15,6 +17,8 @@ import android.util.Log;
 
 public class NetHelper {
 
+	private final static String FREEBBS_TW = ".freebbs.tw";
+	
 	/**
 	 * for example, url is www.yahoo.com
 	 * I will return .yahoo.com as my domain
@@ -36,6 +40,15 @@ public class NetHelper {
 				Log.e("NetHelper", url);
 			}
 			return null;
+		}
+		
+		int bIdx = host.lastIndexOf(FREEBBS_TW);
+		if (bIdx >= 0) {
+			if (host.equals("www"+FREEBBS_TW)) {
+				return FREEBBS_TW;
+			} else {
+				return "."+host;
+			}
 		}
 
 		int firstidx = host.indexOf(".");
@@ -140,4 +153,19 @@ public class NetHelper {
         }
         return cookies_map;
 	}
+	
+	public static String getCharset(String body) {
+		String charset = "utf-8";
+		Pattern p = Pattern.compile("text/html; charset=([^\"]+)");
+		Matcher m = p.matcher(body);
+		if (m.find()) {
+			charset = m.group(1);
+			if (charset == null) {
+				charset = "utf-8";
+			}
+		}
+		
+		return charset;
+	}
+	
 }

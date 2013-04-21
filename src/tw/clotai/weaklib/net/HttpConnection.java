@@ -115,6 +115,12 @@ public class HttpConnection implements Connection {
         return this;
     }
 
+    public Connection charset(String charset) {
+    	Validate.notNull(charset, "Charset must not be null");
+    	req.charset(charset);
+    	return this;
+    }
+    
     
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
@@ -135,6 +141,8 @@ public class HttpConnection implements Connection {
         return res;
     }
 
+
+    
     public Connection.Request request() {
         return req;
     }
@@ -296,7 +304,8 @@ public class HttpConnection implements Connection {
         private int maxBodySizeBytes;
         private boolean followRedirects;
         private Collection<Connection.KeyVal> data;
-
+        private String charset;
+        
       	private Request() {
             timeoutMilliseconds = 15000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
@@ -308,6 +317,17 @@ public class HttpConnection implements Connection {
 
         public int timeout() {
             return timeoutMilliseconds;
+        }
+        
+        public String charset() {
+        	if (this.charset == null) {
+        		return DataUtil.defaultCharset;
+        	}
+        	return this.charset;
+        }
+        
+        public void charset(String charset) {
+        	this.charset = charset;
         }
 
         public Request timeout(int millis) {
@@ -396,7 +416,7 @@ public class HttpConnection implements Connection {
                 try {
                     conn.connect();
                     if (req.method() == Connection.Method.POST) {
-                        writePost(req.data(), conn.getOutputStream());
+                        writePost(req.data(), conn.getOutputStream(), req.charset());
                     }
 
                     int status = conn.getResponseCode();
@@ -567,8 +587,8 @@ public class HttpConnection implements Connection {
             }
         }
 
-        private static void writePost(Collection<Connection.KeyVal> data, OutputStream outputStream) throws IOException {
-            OutputStreamWriter w = new OutputStreamWriter(outputStream, DataUtil.defaultCharset);
+        private static void writePost(Collection<Connection.KeyVal> data, OutputStream outputStream, String charset) throws IOException {
+            OutputStreamWriter w = new OutputStreamWriter(outputStream, charset);
             boolean first = true;
             for (Connection.KeyVal keyVal : data) {
                 if (!first) 
@@ -576,9 +596,9 @@ public class HttpConnection implements Connection {
                 else
                     first = false;
                 
-                w.write(URLEncoder.encode(keyVal.key(), DataUtil.defaultCharset));
+                w.write(URLEncoder.encode(keyVal.key(), charset));
                 w.write('=');
-                w.write(URLEncoder.encode(keyVal.value(), DataUtil.defaultCharset));
+                w.write(URLEncoder.encode(keyVal.value(), charset));
             }
             w.close();
         }
