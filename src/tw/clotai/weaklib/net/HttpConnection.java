@@ -116,7 +116,7 @@ public class HttpConnection implements Connection {
     }
 
     public Connection charset(String charset) {
-    	Validate.notNull(charset, "Charset must not be null");
+    	//Validate.notNull(charset, "Charset must not be null");
     	req.charset(charset);
     	return this;
     }
