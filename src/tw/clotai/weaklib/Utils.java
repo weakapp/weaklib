@@ -315,8 +315,7 @@ public class Utils {
 		File packageDir = null;
 
 		/** try to cache on external storage **/
-		if (Environment.getExternalStorageState().equals(
-				android.os.Environment.MEDIA_MOUNTED)) {
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
 			File dataDir = new File(new File(
 					Environment.getExternalStorageDirectory(), "Android"),
 					"data");
@@ -353,6 +352,7 @@ public class Utils {
 				}
 			}
 		}
+		
 		if (appCacheDir == null) {
 			return null;
 		}

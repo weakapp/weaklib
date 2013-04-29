@@ -138,6 +138,93 @@ public class ImageHelper {
 		return ret;
 	}
 
+	
+	public static Bitmap[] decodeBitmap(String imageFileStr,
+									BitmapFactory.Options options, 
+									int[] reso, 
+									boolean bCrop) {
+		Bitmap ret[] = new Bitmap[2];
+		
+		Bitmap bitmap = null;
+		Bitmap newBitmap = null;
+		InputStream in = null;
+		int maxW = reso[0];
+		int maxH = reso[1];
 
+		try {
+			try {
+				in = new FileInputStream(new File(imageFileStr));
+				bitmap = BitmapFactory.decodeStream(in, null, options);
+			} finally {
+				if (in != null) {
+					in.close();
+					in = null;
+				}
+			}
+
+			if (bitmap != null) {
+
+				float scale = 0;
+				int newWidth = 0;
+				int newHeight = 0;
+
+				scale = (Math.max(bitmap.getWidth(), bitmap.getHeight()) * 1.0f)
+						/ (Math.max(maxW, maxH) * 1.0f);
+
+				if (scale > 1) {
+					newWidth = (int) (bitmap.getWidth() / scale);
+					newHeight = (int) (bitmap.getHeight() / scale);
+
+					if ((newWidth != 0) && (newHeight != 0)) {
+						newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
+								newHeight, true);
+						if (newBitmap != bitmap) {
+							bitmap.recycle();
+							bitmap = null;
+						}
+
+					} else {
+						newBitmap = bitmap;
+					}
+				} else {
+					newBitmap = bitmap;
+				}
+				bitmap = null;
+
+				/** crop it. **/
+				if ((newBitmap.getWidth() > newBitmap.getHeight()) && bCrop) {
+					int width = newBitmap.getWidth();
+					int height = newBitmap.getHeight();
+					
+					/* left side */
+					Bitmap croppedBmp = Bitmap.createBitmap(newBitmap,0, 0, width/2, height);
+					ret[0] = croppedBmp;
+					
+					/* right side */
+					croppedBmp = Bitmap.createBitmap(newBitmap, width/2, 0, width/2, height);
+					ret[1] = croppedBmp;
+					
+					newBitmap.recycle();
+					newBitmap = null;
+
+				} else {
+					/** default we are using left to right, so default it should be left **/
+					ret[0] = newBitmap;
+					ret[1] = null;
+				}
+			}
+		} catch (OutOfMemoryError error) {
+			if (null != bitmap) {
+				bitmap.recycle();
+				bitmap = null;
+			}
+			if (null != newBitmap) {
+				newBitmap.recycle();
+				newBitmap = null;
+			}
+		} catch (IOException e) {
+		}
+		return ret;
+	}
 
 }
