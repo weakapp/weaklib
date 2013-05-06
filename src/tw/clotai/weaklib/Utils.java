@@ -439,5 +439,16 @@ public class Utils {
 
 		return sb.toString();
 	}
+	
+	
+	public static String replaceIllegalChars(String s) {
+		if (s == null) {
+			return s;
+		}
+		String t = s.replaceAll("[!\\?]", "");
+		
+		return t;
+		
+	}
 
 }
