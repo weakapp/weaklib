@@ -301,6 +301,54 @@ public class Utils {
 		return sb.toString();
 	}
 
+	public static String getCahcePath(Context c) {
+		return getCahcePath(c, null);
+	}
+
+	public static String getCahcePath(Context c, String suffix) {
+		if (c == null) {
+			return null;
+		}
+
+		File appCacheDir = null;
+		File packageDir = null;
+
+		/** try to cache on external storage **/
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			File dataDir = new File(new File(
+					Environment.getExternalStorageDirectory(), "Android"),
+					"data");
+
+			packageDir = new File(dataDir, c.getPackageName());
+
+			if (suffix != null) {
+				appCacheDir = new File(new File(packageDir, "cache"), suffix);
+			} else {
+				appCacheDir = new File(packageDir, "cache");
+			}
+		}
+
+		if (appCacheDir == null) {
+			if (suffix != null) {
+				appCacheDir = new File(c.getCacheDir(), suffix);
+			} else {
+				appCacheDir = c.getCacheDir();
+			}
+		}
+
+		if (!appCacheDir.exists()) {
+			if (!appCacheDir.mkdirs()) {
+				appCacheDir = null;
+			}
+		}
+		
+		if (appCacheDir == null) {
+			return null;
+		}
+		return appCacheDir.getAbsolutePath();
+	}
+	
+	
 	public static String getImageCahcePath(Context c) {
 		return getImageCahcePath(c, null);
 	}
