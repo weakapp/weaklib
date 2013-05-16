@@ -376,11 +376,6 @@ public interface Connection {
          */
         public String body();
 
-        /**
-         * Get the body of the response as an array of bytes.
-         * @return body bytes
-         */
-        public byte[] bodyAsBytes();
     }
 
     /**

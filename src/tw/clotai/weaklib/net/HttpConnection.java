@@ -11,8 +11,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -126,6 +124,7 @@ public class HttpConnection implements Connection {
         req.method(Method.GET);
         req.header("User-Agent", 
         		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
+        req.header("Accept-Language:", "en-US,en;q=0.8");
         return execute();
     }
 
@@ -133,6 +132,7 @@ public class HttpConnection implements Connection {
         req.method(Method.POST);
         req.header("User-Agent", 
         		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
+        req.header("Accept-Language:", "en-US,en;q=0.8");
         return execute();
     }
 
@@ -383,7 +383,8 @@ public class HttpConnection implements Connection {
         private static final int MAX_REDIRECTS = 5;
         private int statusCode;
         private String statusMessage;
-        private ByteBuffer byteData;
+        //private ByteBuffer byteData;
+        private String resBody = null;
         private String charset;
         private String contentType;
         private boolean executed = false;
@@ -462,7 +463,8 @@ public class HttpConnection implements Connection {
                                 new BufferedInputStream(new GZIPInputStream(dataStream)) :
                                 new BufferedInputStream(dataStream);
 
-                        res.byteData = DataUtil.readToByteBuffer(bodyStream, req.maxBodySize());
+                        res.resBody = DataUtil.readToString(bodyStream, req.charset());
+                        //res.byteData = DataUtil.readToByteBuffer(bodyStream, req.maxBodySize());
                         res.charset = DataUtil.getCharsetFromContentType(res.contentType); // may be null, readInputStream deals with it
                     } finally {
                         if (bodyStream != null) bodyStream.close();
@@ -506,19 +508,8 @@ public class HttpConnection implements Connection {
 
         public String body() {
             Validate.isTrue(executed, "Request must be executed (with .execute(), .get(), or .post() before getting response body");
-            // charset gets set from header on execute, and from meta-equiv on parse. parse may not have happened yet
-            String body;
-            if (charset == null)
-                body = Charset.forName(DataUtil.defaultCharset).decode(byteData).toString();
-            else
-                body = Charset.forName(charset).decode(byteData).toString();
-            byteData.rewind();
-            return body;
-        }
 
-        public byte[] bodyAsBytes() {
-            Validate.isTrue(executed, "Request must be executed (with .execute(), .get(), or .post() before getting response body");
-            return byteData.array();
+            return resBody;
         }
 
         // set up connection defaults, and details from request

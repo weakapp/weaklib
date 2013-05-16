@@ -1,8 +1,10 @@
 package tw.clotai.weaklib.net;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Locale;
@@ -20,6 +22,26 @@ public class DataUtil {
 
     private DataUtil() {}
 
+    static String readToString(InputStream inStream, String charset) throws IOException {
+
+    	String data = null;
+    	StringBuilder sb = new StringBuilder();
+    	
+    	BufferedReader br = new BufferedReader(new InputStreamReader(inStream, charset));
+    	
+        while ((data = br.readLine()) != null) {
+        	sb.append(data);
+        }
+        
+        br.close();
+        
+        return sb.toString();
+    }
+    
+    static String readToString(InputStream inStream) throws IOException {
+        return readToString(inStream, defaultCharset);
+    }    
+    
     /**
      * Read the input stream into a byte buffer.
      * @param inStream the input stream to read from
