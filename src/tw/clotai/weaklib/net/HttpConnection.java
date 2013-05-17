@@ -610,7 +610,11 @@ public class HttpConnection implements Connection {
         }
 
         private static void writePost(Collection<Connection.KeyVal> data, OutputStream outputStream, String charset) throws IOException {
-            OutputStreamWriter w = new OutputStreamWriter(outputStream, charset);
+            String postCharset = charset;
+            if (postCharset == null) {
+                postCharset = DataUtil.defaultCharset;
+            }
+            OutputStreamWriter w = new OutputStreamWriter(outputStream, postCharset);
             boolean first = true;
             for (Connection.KeyVal keyVal : data) {
                 if (!first) 
@@ -618,9 +622,9 @@ public class HttpConnection implements Connection {
                 else
                     first = false;
                 
-                w.write(URLEncoder.encode(keyVal.key(), charset));
+                w.write(URLEncoder.encode(keyVal.key(), postCharset));
                 w.write('=');
-                w.write(URLEncoder.encode(keyVal.value(), charset));
+                w.write(URLEncoder.encode(keyVal.value(), postCharset));
             }
             w.close();
         }
