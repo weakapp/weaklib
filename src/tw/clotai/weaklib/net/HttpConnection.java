@@ -1,16 +1,14 @@
 package tw.clotai.weaklib.net;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -20,6 +18,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * Implementation of {@link Connection}.
@@ -333,9 +332,6 @@ public class HttpConnection implements Connection {
         }
         
         public String charset() {
-        	if (this.charset == null) {
-        		return DataUtil.defaultCharset;
-        	}
         	return this.charset;
         }
         
@@ -383,9 +379,10 @@ public class HttpConnection implements Connection {
         private static final int MAX_REDIRECTS = 5;
         private int statusCode;
         private String statusMessage;
-        //private ByteBuffer byteData;
+        private ByteBuffer byteData;
         private String resBody = null;
-        private String charset;
+        private String preCharset = null;
+        private String charset = null;
         private String contentType;
         private boolean executed = false;
         private int numRedirects = 0;
@@ -463,9 +460,13 @@ public class HttpConnection implements Connection {
                                 new BufferedInputStream(new GZIPInputStream(dataStream)) :
                                 new BufferedInputStream(dataStream);
 
-                        res.resBody = DataUtil.readToString(bodyStream, req.charset());
-                        //res.byteData = DataUtil.readToByteBuffer(bodyStream, req.maxBodySize());
-                        res.charset = DataUtil.getCharsetFromContentType(res.contentType); // may be null, readInputStream deals with it
+                        if (req.charset() != null) {
+                            res.resBody = DataUtil.readToString(bodyStream, req.charset());
+                            res.charset = req.charset();
+                        } else {
+                            res.byteData = DataUtil.readToByteBuffer(bodyStream, req.maxBodySize());
+                            res.charset = DataUtil.getCharsetFromContentType(res.contentType); // may be null, readInputStream deals with it
+                        }
                     } finally {
                         if (bodyStream != null) bodyStream.close();
                         if (dataStream != null) dataStream.close();
@@ -499,6 +500,12 @@ public class HttpConnection implements Connection {
         }
         
         public void charset(String charset) {
+            if (charset == null) {
+                return;
+            }
+            if (preCharset == null) {
+                preCharset = this.charset;
+            }
         	this.charset = charset;
         }
 
@@ -509,7 +516,18 @@ public class HttpConnection implements Connection {
         public String body() {
             Validate.isTrue(executed, "Request must be executed (with .execute(), .get(), or .post() before getting response body");
 
-            return resBody;
+            if (resBody != null) {
+                return resBody;
+            } else {
+                String body;
+                if (charset == null) {
+                    body = Charset.forName(DataUtil.defaultCharset).decode(byteData).toString();
+                } else {
+                    body = Charset.forName(charset).decode(byteData).toString();
+                }
+                byteData.rewind();
+                return body;
+            }
         }
 
         // set up connection defaults, and details from request
