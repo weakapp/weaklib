@@ -16,7 +16,6 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 ant.properties
-java.env
 
 # Eclipse project files
 .classpath
