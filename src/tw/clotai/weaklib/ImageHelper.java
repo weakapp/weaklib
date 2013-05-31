@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -198,11 +200,11 @@ public class ImageHelper {
 					
 					/* left side */
 					Bitmap croppedBmp = Bitmap.createBitmap(newBitmap,0, 0, width/2, height);
-					ret[0] = croppedBmp;
+					ret[1] = croppedBmp;
 					
 					/* right side */
 					croppedBmp = Bitmap.createBitmap(newBitmap, width/2, 0, width/2, height);
-					ret[1] = croppedBmp;
+					ret[0] = croppedBmp;
 					
 					newBitmap.recycle();
 					newBitmap = null;
@@ -226,5 +228,110 @@ public class ImageHelper {
 		}
 		return ret;
 	}
+
+
+    public static Bitmap[] decodeBitmap(ZipFile zipFile, ZipEntry zipEntry,
+                                        BitmapFactory.Options options, int[] reso, int pass, boolean bCrop) {
+        Bitmap ret[] = new Bitmap[2];
+
+        Bitmap bitmap = null;
+        Bitmap newBitmap = null;
+        InputStream in = null;
+        int maxW = reso[0];
+        int maxH = reso[1];
+
+        if (pass > 20) {
+            return null;
+        }
+
+        try {
+            try {
+                in = zipFile.getInputStream(zipEntry);
+                bitmap = BitmapFactory.decodeStream(in, null, options);
+            } finally {
+                if (in != null) {
+                    in.close();
+                    in = null;
+                }
+            }
+
+            if (bitmap != null) {
+
+                float scale = 0;
+                int newWidth = 0;
+                int newHeight = 0;
+
+                scale = (Math.max(bitmap.getWidth(), bitmap.getHeight()) * 1.0f)
+                        / (Math.max(maxW, maxH) * 1.0f);
+
+                if (scale > 1) {
+                    newWidth = (int) (bitmap.getWidth() / scale);
+                    newHeight = (int) (bitmap.getHeight() / scale);
+
+                    if ((newWidth != 0) && (newHeight != 0)) {
+                        newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
+                                newHeight, true);
+                        if (newBitmap != bitmap) {
+                            bitmap.recycle();
+                            bitmap = null;
+                        }
+                    } else {
+                        newBitmap = bitmap;
+                    }
+
+                } else {
+                    newBitmap = bitmap;
+
+                }
+
+                /** crop it. **/
+                if ((newBitmap.getWidth() > newBitmap.getHeight()) && bCrop) {
+                    int width = newBitmap.getWidth();
+                    int height = newBitmap.getHeight();
+
+					/* left side */
+                    Bitmap croppedBmp = Bitmap.createBitmap(newBitmap,0, 0, width/2, height);
+
+                    ret[1] = croppedBmp;
+
+					/* right side */
+                    croppedBmp = Bitmap.createBitmap(newBitmap, width/2, 0, width/2, height);
+                    ret[0] = croppedBmp;
+
+                    newBitmap.recycle();
+                    newBitmap = null;
+
+                } else {
+                    ret[0] = null;
+                    ret[1] = newBitmap;
+
+                }
+            }
+        } catch (OutOfMemoryError error) {
+
+            if (null != bitmap) {
+                bitmap.recycle();
+                bitmap = null;
+            }
+            if (null != newBitmap) {
+                newBitmap.recycle();
+                newBitmap = null;
+            }
+            int i = 0;
+            for (i = 0;i < ret.length; i++) {
+                if (null != ret[i]) {
+                    ret[i].recycle();
+                    ret[i] = null;
+                }
+            }
+            options.inSampleSize += 1;
+
+            ret = decodeBitmap(zipFile, zipEntry, options, reso, pass + 1, bCrop);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
 
 }

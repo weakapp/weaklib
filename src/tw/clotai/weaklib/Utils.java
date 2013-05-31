@@ -30,6 +30,7 @@ import javax.crypto.spec.DESKeySpec;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -496,7 +497,49 @@ public class Utils {
 		String t = s.replaceAll("[!\\?]", "");
 		
 		return t;
-		
 	}
+
+    public static boolean isLandscape(Context ctxt) {
+        int orientation = ctxt.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            return false;
+        }
+        return true;
+    }
+
+    public static float getRealDimens(Context ctxt, int resId) {
+        Display d = ((WindowManager) ctxt
+                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        d.getMetrics(metrics);
+
+        float dimen = ctxt.getResources().getDimension(resId);
+
+        return (dimen / metrics.scaledDensity);
+    }
+
+
+    public interface OnDeleteCallback {
+        public void onDeleteFile(String fullpath);
+    }
+
+    public static void delete(File f, OnDeleteCallback callback) {
+        if (f.exists()) {
+            File[] files = f.listFiles();
+            if ((files != null) && (files.length > 0)) {
+                int i;
+                int count = files.length;
+                for (i = 0; i < count; i++) {
+                    delete(files[i], callback);
+                }
+            }
+            if (callback != null) {
+                callback.onDeleteFile(f.getAbsolutePath());
+            }
+            f.delete();
+        }
+    }
+
 
 }
