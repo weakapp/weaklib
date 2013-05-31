@@ -182,28 +182,13 @@ public class HttpConnection implements Connection {
             this.url = url;
             
             Uri uri = Uri.parse(url.toExternalForm());
-            
-//            String lastseg = uri.getLastPathSegment();
-//            
-//            if (lastseg == null) {
-//            	this.baseURL = url.toExternalForm();
-//            } else {
-//            	this.baseURL = url.toExternalForm().substring(0, url.toExternalForm().lastIndexOf(lastseg));
-//            }
-            
-            int index = url.toExternalForm().lastIndexOf("/");
-            if (index != -1) {
-            	String scheme = uri.getScheme();
-            	int slash = scheme.length()+2;
-            	if (index == slash) {
-            		this.baseURL = url.toExternalForm();
-            	} else {
-            		this.baseURL = url.toExternalForm().substring(0, index+1);
-            	}
-            } else {
-            	this.baseURL = url.toExternalForm();
-            }
 
+            int index = url.toExternalForm().indexOf("?");
+            if (index > 0) {
+                this.baseURL = url.toExternalForm().substring(0, index);
+            } else {
+                this.baseURL = url.toExternalForm();
+            }
             return (T) this;
         }
 
