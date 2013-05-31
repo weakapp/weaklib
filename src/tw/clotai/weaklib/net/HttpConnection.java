@@ -123,7 +123,7 @@ public class HttpConnection implements Connection {
         req.method(Method.GET);
         req.header("User-Agent", 
         		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
-        req.header("Accept-Language:", "en-US,en;q=0.8");
+        req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
 
@@ -131,7 +131,7 @@ public class HttpConnection implements Connection {
         req.method(Method.POST);
         req.header("User-Agent", 
         		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
-        req.header("Accept-Language:", "en-US,en;q=0.8");
+        req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
 
