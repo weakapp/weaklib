@@ -304,7 +304,7 @@ public class HttpConnection implements Connection {
         private String charset;
         
       	private Request() {
-            timeoutMilliseconds = 15000;
+            timeoutMilliseconds = 20000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
             data = new ArrayList<Connection.KeyVal>();
@@ -404,7 +404,7 @@ public class HttpConnection implements Connection {
                 serialiseRequestUrl(req); // appends query string
             }
             
-            int retries = 1;
+            int retries = 0;
             Response res = null;
             
             do {

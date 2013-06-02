@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
@@ -16,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -517,6 +520,24 @@ public class Utils {
         float dimen = ctxt.getResources().getDimension(resId);
 
         return (dimen / metrics.scaledDensity);
+    }
+
+
+    public static boolean isImage(File f) {
+        if (f == null) {
+            return false;
+        }
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        String type = fileNameMap.getContentTypeFor(f.getAbsolutePath());
+        if (type == null) {
+            return false;
+        }
+
+        String s = type.toLowerCase(Locale.US);
+        if (s.contains("image")) {
+            return true;
+        }
+        return false;
     }
 
 
