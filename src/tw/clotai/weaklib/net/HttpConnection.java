@@ -121,7 +121,7 @@ public class HttpConnection implements Connection {
     
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
-        req.header("User-Agent", 
+        req.header("User-Agent",
         		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
@@ -512,13 +512,15 @@ public class HttpConnection implements Connection {
             if (resBody != null) {
                 return resBody;
             } else {
-                String body;
-                if (charset == null) {
-                    body = Charset.forName(DataUtil.defaultCharset).decode(byteData).toString();
-                } else {
-                    body = Charset.forName(charset).decode(byteData).toString();
+                String body = null;
+                if (byteData != null) {
+                    if (charset == null) {
+                        body = Charset.forName(DataUtil.defaultCharset).decode(byteData).toString();
+                    } else {
+                        body = Charset.forName(charset).decode(byteData).toString();
+                    }
+                    byteData.rewind();
                 }
-                byteData.rewind();
                 return body;
             }
         }
@@ -540,6 +542,7 @@ public class HttpConnection implements Connection {
             for (Map.Entry<String, String> header : req.headers().entrySet()) {
                 conn.addRequestProperty(header.getKey(), header.getValue());
             }
+
             return conn;
         }
 
