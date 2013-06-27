@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.FileNameMap;
@@ -345,7 +347,9 @@ public class Utils {
 
 		if (!appCacheDir.exists()) {
 			if (!appCacheDir.mkdirs()) {
-				appCacheDir = null;
+				if (!appCacheDir.exists()) {
+					appCacheDir = null;
+				}
 			}
 		}
 		
@@ -600,4 +604,13 @@ public class Utils {
             return true;
         }
     }
+
+	public static String getPrintStackString(Exception ex) {
+		StringWriter errors = new StringWriter();
+		PrintWriter p = new PrintWriter(errors);
+		ex.printStackTrace(p);
+		String ret = errors.toString();
+		p.close();
+		return ret;
+	}
 }
