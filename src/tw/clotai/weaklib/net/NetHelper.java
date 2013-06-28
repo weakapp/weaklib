@@ -157,6 +157,10 @@ public class NetHelper {
 	public static String getCharset(String body) {
         //content="text/html; charset=big5-hkscs"
 		String charset = "utf-8";
+        if (body == null) {
+            return charset;
+        }
+
 		Pattern p = Pattern.compile("text/html;\\s*charset=([^\"']+)");
 		Matcher m = p.matcher(body);
 		if (m.find()) {

@@ -229,6 +229,73 @@ public class ImageHelper {
 		return ret;
 	}
 
+    public static Bitmap[] decodeRealSizeBitmap(String imageFileStr) {
+        Bitmap ret[] = new Bitmap[2];
+
+        Bitmap bitmap = null;
+        Bitmap newBitmap = null;
+        InputStream in = null;
+        BitmapFactory.Options options = ImageHelper.getDefaultOptions();
+        options.inSampleSize = 1;
+
+        try {
+            try {
+                in = new FileInputStream(new File(imageFileStr));
+                bitmap = BitmapFactory.decodeStream(in, null, options);
+            } finally {
+                if (in != null) {
+                    in.close();
+                    in = null;
+                }
+            }
+
+            if (bitmap != null) {
+                float scale = 0;
+                int newWidth = 0;
+                int newHeight = 0;
+
+                if (bitmap.getWidth() > 2048 || bitmap.getHeight() > 2048) {
+                    scale = (Math.max(bitmap.getWidth(), bitmap.getHeight()) * 1.0f)
+                            / 2048f;
+
+                    if (scale > 1) {
+                        newWidth = (int) (bitmap.getWidth() / scale);
+                        newHeight = (int) (bitmap.getHeight() / scale);
+
+                        if ((newWidth != 0) && (newHeight != 0)) {
+                            newBitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
+                                    newHeight, true);
+                            if (newBitmap != bitmap) {
+                                bitmap.recycle();
+                                bitmap = null;
+                            }
+
+                        } else {
+                            newBitmap = bitmap;
+                        }
+                    } else {
+                        newBitmap = bitmap;
+                    }
+                } else {
+                    newBitmap = bitmap;
+                }
+                ret[0] = newBitmap;
+                ret[1] = null;
+            }
+        } catch (OutOfMemoryError error) {
+            error.printStackTrace();
+            if (null != bitmap) {
+                bitmap.recycle();
+                bitmap = null;
+            }
+            if (null != newBitmap) {
+                newBitmap.recycle();
+                newBitmap = null;
+            }
+        } catch (IOException e) {
+        }
+        return ret;
+    }
 
     public static Bitmap[] decodeBitmap(ZipFile zipFile, ZipEntry zipEntry,
                                         BitmapFactory.Options options, int[] reso, int pass, boolean bCrop) {

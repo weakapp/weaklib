@@ -364,7 +364,7 @@ public class Utils {
 		return getImageCahcePath(c, null);
 	}
 
-	public static String getImageCahcePath(Context c, String suffix) {
+	public static synchronized String getImageCahcePath(Context c, String suffix) {
 		if (c == null) {
 			return null;
 		}
