@@ -613,4 +613,16 @@ public class Utils {
 		p.close();
 		return ret;
 	}
+
+    public static boolean isTaskRunning(AsyncTask<?,?,?> task) {
+        if (task == null) {
+            return false;
+        }
+
+        if (task.getStatus() == AsyncTask.Status.FINISHED) {
+            return false;
+        }
+
+        return true;
+    }
 }
