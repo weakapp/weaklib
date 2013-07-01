@@ -188,7 +188,6 @@ public class HttpConnection implements Connection {
 			} else {
                 this.baseURL = url.toExternalForm();
 			}
-
 /*
             int index = url.toExternalForm().indexOf("?");
             if (index > 0) {
@@ -312,7 +311,7 @@ public class HttpConnection implements Connection {
         private String charset;
         
       	private Request() {
-            timeoutMilliseconds = 20000;
+            timeoutMilliseconds = 30000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
             data = new ArrayList<Connection.KeyVal>();
@@ -329,6 +328,9 @@ public class HttpConnection implements Connection {
         }
         
         public void charset(String charset) {
+            if (charset == null) {
+                return;
+            }
         	this.charset = charset;
         }
 
@@ -578,7 +580,7 @@ public class HttpConnection implements Connection {
                 List<String> values = entry.getValue();
                 if (name.equalsIgnoreCase("Set-Cookie")) {
                     for (String value : values) {
-                        if (value == null)
+                        if ((value == null) || (value.length() == 0))
                             continue;
 
                         List<HttpCookie> cookies = HttpCookie.parse(value);
