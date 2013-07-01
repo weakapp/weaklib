@@ -412,7 +412,7 @@ public class HttpConnection implements Connection {
                 serialiseRequestUrl(req); // appends query string
             }
             
-            int retries = 0;
+            int retries = -1;
             Response res = null;
             
             do {
