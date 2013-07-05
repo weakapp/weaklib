@@ -3,6 +3,7 @@ package tw.clotai.weaklib;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -556,11 +557,11 @@ public class Utils {
     }
 
 
-    public interface OnDeleteCallback {
-        public void onDeleteFile(String fullpath);
+    public interface OnProcessCallback {
+        public void onProcessFile(String fullpath);
     }
 
-    public static void delete(File f, OnDeleteCallback callback) {
+    public static void delete(File f, OnProcessCallback callback) {
         if (f.exists()) {
             File[] files = f.listFiles();
             if ((files != null) && (files.length > 0)) {
@@ -571,9 +572,46 @@ public class Utils {
                 }
             }
             if (callback != null) {
-                callback.onDeleteFile(f.getAbsolutePath());
+                callback.onProcessFile(f.getAbsolutePath());
             }
             f.delete();
+        }
+    }
+
+    public static void copyFiles(File src, File dst, OnProcessCallback callback) {
+        if (src.exists()) {
+            File of;
+            InputStream in = null;
+            File[] files = src.listFiles();
+            if ((files != null) && (files.length > 0)) {
+                for (File f: files) {
+                    if (f.isFile()) {
+                        of = new File(dst, f.getName());
+                        try {
+                            in = new FileInputStream(f);
+                            Utils.copyToFile(in, of);
+                            if (callback != null) {
+                                callback.onProcessFile(of.getAbsolutePath());
+                            }
+                        } catch (IOException e) {
+                        } finally {
+                            if (in != null) {
+                                try {
+                                    in.close();
+                                } catch (IOException e) {}
+                            }
+                            in = null;
+                        }
+                    } else if (f.isDirectory()) {
+                        of = new File(dst, f.getName());
+                        of.mkdirs();
+                        if (callback != null) {
+                            callback.onProcessFile(of.getAbsolutePath());
+                        }
+                        copyFiles(f, of, callback);
+                    }
+                }
+            }
         }
     }
 
