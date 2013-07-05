@@ -345,6 +345,10 @@ public class Utils {
 			}
 		}
 
+        if (appCacheDir == null) {
+            return null;
+        }
+
 		if (!appCacheDir.exists()) {
 			if (!appCacheDir.mkdirs()) {
 				if (!appCacheDir.exists()) {
@@ -439,9 +443,12 @@ public class Utils {
 			if (bin != null) {
 				bin.close();
 			}
-			if (fos.getFD() != null) {
-				fos.getFD().sync();
-			}
+            if (fos != null) {
+                if (fos.getFD() != null) {
+                    fos.getFD().sync();
+                }
+            }
+
 			if (bout != null) {
 				bout.close();
 			}
@@ -494,6 +501,7 @@ public class Utils {
 			String s = URLDecoder.decode(sb.toString(), "UTF-8");
 			return s;
 		} catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
 		}
 
 		return sb.toString();
