@@ -27,18 +27,23 @@ public class NetHelper {
 		if (url == null) {
 			return null;
 		}
-		
+        String rurl = null;
+
 		if (url.startsWith(".")) {
 			return url;
-		}		
-		Uri uri = Uri.parse(url);
+		}
+
+        if (url.startsWith("http")) {
+            rurl = url;
+        } else {
+            rurl = "http://"+url;
+        }
+
+		Uri uri = Uri.parse(rurl);
 
 		String host = uri.getHost();
 		
 		if (host == null) {
-			if (url != null) {
-				Log.e("NetHelper", url);
-			}
 			return null;
 		}
 		
