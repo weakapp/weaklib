@@ -467,8 +467,8 @@ public class HttpConnection implements Connection {
                         if (dataStream != null) dataStream.close();
                     }
                     break;
-                } catch (SocketTimeoutException e) {
-                	e.printStackTrace();
+//                } catch (SocketTimeoutException e) {
+//                	e.printStackTrace();
                 } finally {
                     conn.disconnect();
                     conn = null;
