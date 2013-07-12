@@ -26,14 +26,17 @@ public class DataUtil {
 
     	String data = null;
     	StringBuilder sb = new StringBuilder();
-    	
-    	BufferedReader br = new BufferedReader(new InputStreamReader(inStream, charset));
-    	
-        while ((data = br.readLine()) != null) {
-        	sb.append(data);
-        }
-        
-        br.close();
+    	BufferedReader br = null;
+		try {
+			br = new BufferedReader(new InputStreamReader(inStream, charset));
+			
+			while ((data = br.readLine()) != null) {
+				sb.append(data);
+			}
+			
+		} finally {
+			br.close();
+		}
         
         return sb.toString();
     }
