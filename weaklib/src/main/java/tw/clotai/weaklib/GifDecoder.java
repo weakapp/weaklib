@@ -2,6 +2,7 @@ package tw.clotai.weaklib;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.Vector;
 
 import android.graphics.Bitmap;
@@ -114,14 +115,18 @@ public class GifDecoder {
         int count = getFrameCount();
         int i = 0;
 
-        for (i = 0;i < count; i++) {
-            frame = (GifFrame) frames.elementAt(i);
-            if (frame.delay > delay) {
-                bm = frame.image;
-                delay = frame.delay;
-            }
-        }
-
+		if (count == 1) {
+			frame = (GifFrame) frames.elementAt(i);
+			bm = frame.image;
+		} else {
+			for (i = 0;i < count; i++) {
+				frame = (GifFrame) frames.elementAt(i);
+				if (frame.delay > delay) {
+					bm = frame.image;
+					delay = frame.delay;
+				}
+			}
+		}
         return bm;
     }
 
@@ -242,28 +247,32 @@ public class GifDecoder {
      */
     public int read(InputStream is) {
         init();
-        if (is != null) {
-            if (!(is instanceof BufferedInputStream)) {
-                in = new BufferedInputStream(is);
-            } else {
-                in = is;
-            }
-
-            readHeader();
-            if (!err()) {
-                readContents();
-                if (frameCount < 0) {
-                    status = STATUS_FORMAT_ERROR;
-                }
-            }
-        } else {
-            status = STATUS_OPEN_ERROR;
-        }
         try {
-            is.close();
-            is = null;
-        } catch (Exception e) {
-        }
+			if (is != null) {
+				if (!(is instanceof BufferedInputStream)) {
+					in = new BufferedInputStream(is);
+				} else {
+					in = is;
+				}
+
+				readHeader();
+				if (!err()) {
+					readContents();
+					if (frameCount < 0) {
+						status = STATUS_FORMAT_ERROR;
+					}
+				}
+			} else {
+				status = STATUS_OPEN_ERROR;
+			}
+        } finally {
+			try {
+				if (is != null) {
+					is.close();
+				}
+			} catch (IOException e) {}
+			is = null;
+		}
         return status;
     }
 

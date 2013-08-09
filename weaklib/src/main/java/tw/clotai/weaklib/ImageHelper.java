@@ -293,6 +293,15 @@ public class ImageHelper {
                 newBitmap = null;
             }
         } catch (IOException e) {
+			e.printStackTrace();
+            if (null != bitmap) {
+                bitmap.recycle();
+                bitmap = null;
+            }
+            if (null != newBitmap) {
+                newBitmap.recycle();
+                newBitmap = null;
+            }
         }
         return ret;
     }

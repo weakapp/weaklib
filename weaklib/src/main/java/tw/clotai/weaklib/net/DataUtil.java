@@ -23,17 +23,14 @@ public class DataUtil {
     private DataUtil() {}
 
     static String readToString(InputStream inStream, String charset) throws IOException {
-
     	String data = null;
-    	StringBuilder sb = new StringBuilder();
+    	StringBuilder sb = new StringBuilder(0x1000);
     	BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(inStream, charset));
-			
 			while ((data = br.readLine()) != null) {
 				sb.append(data);
 			}
-			
 		} finally {
 			br.close();
 		}
