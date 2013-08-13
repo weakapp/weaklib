@@ -32,7 +32,9 @@ public class DataUtil {
 				sb.append(data);
 			}
 		} finally {
-			br.close();
+			if (br != null) {
+				br.close();
+			}
 		}
         
         return sb.toString();
