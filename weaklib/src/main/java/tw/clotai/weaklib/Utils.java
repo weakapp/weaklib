@@ -653,10 +653,33 @@ public class Utils {
 
 	public static String getPrintStackString(Exception ex) {
 		StringWriter errors = new StringWriter();
-		PrintWriter p = new PrintWriter(errors);
-		ex.printStackTrace(p);
-		String ret = errors.toString();
-		p.close();
+		PrintWriter p = null;
+		String ret = null;
+		try {
+			p = new PrintWriter(errors);
+			ex.printStackTrace(p);
+			ret = errors.toString();
+		} finally {
+			if (p != null) {
+				p.close();
+			}
+		}
+		return ret;
+	}
+
+	public static String getPrintStackString(java.lang.OutOfMemoryError e) {
+		StringWriter errors = new StringWriter();
+		PrintWriter p = null;
+		String ret = null;
+		try {
+			p = new PrintWriter(errors);
+			e.printStackTrace(p);
+			ret = errors.toString();
+		} finally {
+			if (p != null) {
+				p.close();
+			}
+		}
 		return ret;
 	}
 
