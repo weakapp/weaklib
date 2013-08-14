@@ -563,17 +563,23 @@ public class Utils {
 
     public static void delete(File f, OnProcessCallback callback) {
         if (f.exists()) {
-            File[] files = f.listFiles();
-            if ((files != null) && (files.length > 0)) {
-                int i;
-                int count = files.length;
-                for (i = 0; i < count; i++) {
-                    delete(files[i], callback);
-                }
-            }
-            if (callback != null) {
-                callback.onProcessFile(f.getAbsolutePath());
-            }
+			if (f.isDirectory()) {
+				File[] files = f.listFiles();
+				if ((files != null) && (files.length > 0)) {
+					int i;
+					int count = files.length;
+					for (i = 0; i < count; i++) {
+						if (files[i].isDirectory()) {
+							delete(files[i], callback);
+						} else {
+							files[i].delete();
+						}
+					}
+				}
+				if (callback != null) {
+					callback.onProcessFile(f.getAbsolutePath());
+				}
+			}
             f.delete();
         }
     }
