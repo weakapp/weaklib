@@ -183,7 +183,7 @@ public class HttpConnection implements Connection {
             
             Uri uri = Uri.parse(url.toExternalForm());
             int index = url.toExternalForm().lastIndexOf("/");
-			if (index > 5) {
+			if (index > 7) {
                 this.baseURL = url.toExternalForm().substring(0, index+1);
 			} else {
                 this.baseURL = url.toExternalForm();
