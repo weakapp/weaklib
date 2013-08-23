@@ -31,12 +31,12 @@ public class DataUtil {
 			while ((data = br.readLine()) != null) {
 				sb.append(data);
 			}
+			sb.trimToSize();
 		} finally {
 			if (br != null) {
 				br.close();
 			}
 		}
-        
         return sb.toString();
     }
     
