@@ -24,7 +24,7 @@ public class DataUtil {
 
     static String readToString(InputStream inStream, String charset) throws IOException {
     	String data = null;
-    	StringBuilder sb = new StringBuilder(0x1000);
+    	StringBuilder sb = new StringBuilder(2048);
     	BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(inStream, charset));
