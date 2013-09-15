@@ -570,6 +570,7 @@ public class HttpConnection implements Connection {
 
         void processResponseHeaders(Map<String, List<String>> resHeaders) {
         	String domain = Uri.parse(url.toExternalForm()).getHost();
+			String s;
         	
             for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
                 String name = entry.getKey();
@@ -601,7 +602,11 @@ public class HttpConnection implements Connection {
                     }
                 } else { // only take the first instance of each header
                     if (!values.isEmpty()) {
-                        header(name, values.get(0));
+						s = values.get(0);
+						if (s == null || s.length() == 0) {
+							continue;
+						}
+                        header(name, s);
                     }
                 }
             }

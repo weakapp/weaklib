@@ -272,7 +272,9 @@ public class Utils {
 	}
 
 	public static String generateUniqueID(String url, boolean ext) {
-
+        if (url == null) {
+            return null;
+        }
 		StringBuilder sb = new StringBuilder();
 
 		byte[] md5 = null;
