@@ -223,6 +223,7 @@ public class GifDecoder {
                 }
             }
         }
+
         image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
     }
 
@@ -603,25 +604,34 @@ public class GifDecoder {
         frameCount++;
         // create new image to receive frame data
 
-        int nwidth = width;
-        int nheight = height;
-        int max = Math.max(width, height);
-        if (max > 2048) {
-            float ratio;
-            if (width == max) {
-                nwidth = 2048;
-                ratio = Math.round(width / 2048f);
-                nheight = (int)(height / ratio);
-            } else {
-                height = 2048;
-                ratio = Math.round(height / 2048f);
-                nwidth = (int)(width / ratio);
+        //image = Bitmap.createBitmap(width, height, Config.ARGB_4444);
+        setPixels(); // transfer pixel data to image
+
+        if (image != null) {
+            int nwidth = width;
+            int nheight = height;
+            int max = Math.max(width, height);
+            if (max > 2048) {
+                float ratio;
+                if (width == max) {
+                    nwidth = 2048;
+                    ratio = Math.round(width / 2048f);
+                    nheight = (int)(height / ratio);
+                } else {
+                    nheight = 2048;
+                    ratio = Math.round(height / 2048f);
+                    nwidth = (int)(width / ratio);
+                }
+
+                Bitmap newBitmap = Bitmap.createScaledBitmap(image, nwidth, nheight, true);
+                if (newBitmap != image) {
+                    image.recycle();
+                    image = newBitmap;
+                }
             }
         }
 
 
-        image = Bitmap.createBitmap(nwidth, nheight, Config.ARGB_4444);
-        setPixels(); // transfer pixel data to image
         frames.addElement(new GifFrame(image, delay)); // add image to frame
         // list
         if (transparency) {
