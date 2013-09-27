@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -455,6 +456,10 @@ public class HttpConnection implements Connection {
                                 new BufferedInputStream(new GZIPInputStream(dataStream)) :
                                 new BufferedInputStream(dataStream);
 
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            bodyStream = new DoneHandlerInputStream(bodyStream);
+                        }
+
                         if (req.charset() != null) {
                             res.resBody = DataUtil.readToString(bodyStream, req.charset());
                             res.charset = req.charset();
@@ -716,5 +721,25 @@ public class HttpConnection implements Connection {
         public String toString() {
             return key + "=" + value;
         }      
+    }
+
+
+    final static class DoneHandlerInputStream extends FilterInputStream {
+        private boolean done;
+
+        public DoneHandlerInputStream(InputStream stream) {
+            super(stream);
+        }
+
+        @Override public int read(byte[] bytes, int offset, int count) throws IOException {
+            if (!done) {
+                int result = super.read(bytes, offset, count);
+                if (result != -1) {
+                    return result;
+                }
+            }
+            done = true;
+            return -1;
+        }
     }
 }
