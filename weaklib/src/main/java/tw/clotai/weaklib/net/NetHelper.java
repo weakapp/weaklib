@@ -66,22 +66,33 @@ public class NetHelper {
 		}
 		return host;
 	}
+
+    public static boolean connected(Context context) {
+        return connected(context, false);
+    }
 	
-	public static boolean connected(Context context) {
+	public static boolean connected(Context context, boolean wifi) {
 		boolean ret = false;
 
 		if (context == null) {
 			return false;
 		}
 		ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		NetworkInfo networkInfo;
+
+        if (wifi) {
+            networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        } else {
+            networkInfo = connMgr.getActiveNetworkInfo();
+        }
 
 		if (networkInfo == null) {
 			return ret;
 		}
 		if (networkInfo.isConnected()) {
-			ret = true;
+            ret = true;
 		}
+
 		return ret;
 	}
 	
