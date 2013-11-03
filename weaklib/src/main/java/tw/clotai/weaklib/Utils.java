@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.io.Writer;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -931,6 +932,18 @@ public class Utils {
 
     private static String hex(char ch) {
         return Integer.toHexString(ch).toUpperCase();
+    }
+
+    private static final String ALLOWED_CHARACTERS = "0123456789qwertyuiopasdfghjklzxcvbnm";
+
+    public static String randomStr(int len) {
+        final Random random = new Random();
+        final StringBuilder sb = new StringBuilder();
+        int clen = ALLOWED_CHARACTERS.length();
+        for (int i = 0; i < len; ++i) {
+            sb.append(ALLOWED_CHARACTERS.charAt(random.nextInt(clen)));
+        }
+        return sb.toString();
     }
 
 }
