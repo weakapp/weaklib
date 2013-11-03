@@ -177,13 +177,16 @@ public class NetHelper {
             return charset;
         }
 
-		Pattern p = Pattern.compile("text/html;\\s*charset=([^\"']+)");
+		//Pattern p = Pattern.compile(";\\s*charset=\\s*([^\"]+)/?>");
+        Pattern p = Pattern.compile("text/html;\\s*charset=([^/\\s\"]+)[^>]*>");
 		Matcher m = p.matcher(body);
 		if (m.find()) {
 			charset = m.group(1);
+
 			if (charset == null) {
 				charset = "utf-8";
-			}
+            }
+
             if (m.find()) {
                 charset = m.group(1);
                 if (charset == null) {
@@ -192,7 +195,7 @@ public class NetHelper {
             }
 		}
 		
-		return charset;
+		return charset.trim();
 	}
 	
 }

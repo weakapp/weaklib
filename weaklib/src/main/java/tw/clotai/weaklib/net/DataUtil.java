@@ -1,5 +1,7 @@
 package tw.clotai.weaklib.net;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,7 +18,7 @@ import java.util.regex.Pattern;
  *
  */
 public class DataUtil {
-    private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+    private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"/]*)/?>");
     static final String defaultCharset = "UTF-8"; // used if not found in header or meta charset
     private static final int bufferSize = 0x20000; // ~130K.
 
