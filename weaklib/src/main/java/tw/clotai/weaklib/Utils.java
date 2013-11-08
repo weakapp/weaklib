@@ -990,5 +990,4 @@ public class Utils {
         lp.screenBrightness = brightness * (1f / 255f);
         activity.getWindow().setAttributes(lp);
     }
->>>>>>> cee6a454877f21126c7f8e7641f52710ddd08a5b
 }
