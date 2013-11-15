@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -422,10 +423,20 @@ public class Utils {
         return appCacheDir.getAbsolutePath();
     }
 
+    public interface CopyToFileProgress {
+        public void onProgress(int count);
+    }
     public static void copyToFile(InputStream in, File dest) throws IOException {
+        copyToFile(in, dest, null);
+    }
+
+    public static void copyToFile(InputStream in, File dest, CopyToFileProgress callback) throws IOException {
         FileOutputStream fos = null;
         BufferedInputStream bin = null;
         BufferedOutputStream bout = null;
+
+        int ucnt = 0;
+        int sleepcnt = 0;
 
         try {
             fos = new FileOutputStream(dest);
@@ -433,9 +444,17 @@ public class Utils {
             bout = new BufferedOutputStream(fos, 8192);
 
             byte[] rdata = new byte[8192];
-            int count = 0;
+            int count;
             while ((count = bin.read(rdata)) != -1) {
                 bout.write(rdata, 0, count);
+                if (callback != null) {
+                    sleepcnt++;
+                    ucnt += count;
+                    if ((sleepcnt % 5) == 0) {
+                        callback.onProgress(ucnt);
+                        SystemClock.sleep(10);
+                    }
+                }
             }
             bout.flush();
 
