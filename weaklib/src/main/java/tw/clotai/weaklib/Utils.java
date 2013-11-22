@@ -580,6 +580,9 @@ public class Utils {
     }
 
     public static void delete(File f, OnProcessCallback callback) {
+        if (f == null) {
+            return;
+        }
         if (f.exists()) {
             if (f.isDirectory()) {
                 File[] files = f.listFiles();
@@ -597,6 +600,9 @@ public class Utils {
                 if (callback != null) {
                     callback.onProcessFile(f.getAbsolutePath());
                 }
+            }
+            if (callback != null) {
+                callback.onProcessFile(f.getAbsolutePath());
             }
             f.delete();
         }
