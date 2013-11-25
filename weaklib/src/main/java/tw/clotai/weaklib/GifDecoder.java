@@ -224,7 +224,7 @@ public class GifDecoder {
             }
         }
 
-        image = Bitmap.createBitmap(dest, width, height, Config.ARGB_4444);
+        image = Bitmap.createBitmap(dest, width, height, Config.RGB_565);
     }
 
     /**
@@ -647,6 +647,7 @@ public class GifDecoder {
         // logical screen size
         width = readShort();
         height = readShort();
+
         // packed fields
         int packed = read();
         gctFlag = (packed & 0x80) != 0; // 1 : global color table flag

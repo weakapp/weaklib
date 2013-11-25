@@ -714,11 +714,76 @@ public class Utils {
                         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                     else
                         orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
             }
             activity.setRequestedOrientation(orientation);
 
             return true;
         }
+    }
+
+    public static void orientation_auto(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+    public static void orientation_locked(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+        int tempOrientation = activity.getResources().getConfiguration().orientation;
+        int orientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        switch (tempOrientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                else
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                else
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                break;
+        }
+        activity.setRequestedOrientation(orientation);
+    }
+
+    public static void orientation_portrait_locked(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+        int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
+                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            else
+                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        }
+        activity.setRequestedOrientation(orientation);
+    }
+
+    public static void orientation_landscape_locked(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+        int orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)
+                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            else
+                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        }
+        activity.setRequestedOrientation(orientation);
     }
 
     public static String getPrintStackString(Exception ex) {
