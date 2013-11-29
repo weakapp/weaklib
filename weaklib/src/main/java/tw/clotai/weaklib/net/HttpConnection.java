@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -20,6 +19,9 @@ import java.util.zip.GZIPInputStream;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+
+
+import com.squareup.okhttp.OkHttpClient;
 
 /**
  * Implementation of {@link Connection}.
@@ -534,7 +536,18 @@ public class HttpConnection implements Connection {
 
         // set up connection defaults, and details from request
         private static HttpURLConnection createConnection(Connection.Request req) throws IOException {
-            HttpURLConnection conn = (HttpURLConnection) req.url().openConnection();
+
+            HttpURLConnection conn;
+
+            try {
+                Class.forName("com.squareup.okhttp.OkHttpClient");
+
+                OkHttpClient client = new OkHttpClient();
+                conn = client.open(req.url());
+            } catch (ClassNotFoundException e) {
+                conn = (HttpURLConnection)req.url().openConnection();
+            }
+
             conn.setRequestMethod(req.method().name());
             conn.setInstanceFollowRedirects(false); // don't rely on native redirection support
             conn.setConnectTimeout(req.timeout());

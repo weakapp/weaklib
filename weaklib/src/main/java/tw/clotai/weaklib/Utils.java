@@ -1010,6 +1010,9 @@ public class Utils {
                         out.write('\\');
                         out.write('\\');
                         break;
+                    case ' ':
+                        out.write("%20");
+                        break;
                     default:
                         out.write(ch);
                         break;

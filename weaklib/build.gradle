@@ -1,5 +1,10 @@
 apply plugin: 'android-library'
 
+repositories {
+    mavenCentral()
+}
+
+
 android {
     compileSdkVersion 18
     buildToolsVersion "18.1.1"
@@ -8,4 +13,8 @@ android {
         minSdkVersion 9
         targetSdkVersion 18
     }
+}
+
+dependencies {
+    compile 'com.squareup.okhttp:okhttp:1.2.1'
 }
