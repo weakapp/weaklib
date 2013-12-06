@@ -64,10 +64,10 @@ public class Utils {
     private static final String HASH_ALGORITHM = "MD5";
     private static final int RADIX = 10 + 26; // 10 digits + 26 letters
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(11)
     public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
                                             T... params) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= 11) {
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
         } else {
             task.execute(params);
@@ -450,9 +450,9 @@ public class Utils {
                 if (callback != null) {
                     sleepcnt++;
                     ucnt += count;
-                    if ((sleepcnt % 5) == 0) {
+                    if ((sleepcnt % 10) == 0) {
                         callback.onProgress(ucnt);
-                        SystemClock.sleep(10);
+                        SystemClock.sleep(150);
                     }
                 }
             }
@@ -759,13 +759,9 @@ public class Utils {
             return;
         }
         Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int rotation = display.getRotation();
         int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
-                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-            else
-                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+            orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         }
         activity.setRequestedOrientation(orientation);
     }
@@ -776,12 +772,12 @@ public class Utils {
         }
         Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int rotation = display.getRotation();
-        int orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        int orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
         if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)
-                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            if (rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_90)
+                orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
             else
-                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
         }
         activity.setRequestedOrientation(orientation);
     }

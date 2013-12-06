@@ -30,7 +30,10 @@ import com.squareup.okhttp.OkHttpClient;
 public class HttpConnection implements Connection {
     public static Connection newInstance(String url) {
         Connection con = new HttpConnection();
-        con.url(url);
+
+        String nurl = url.replace(" ", "%20");
+
+        con.url(nurl);
         return con;
     }
 
@@ -458,7 +461,7 @@ public class HttpConnection implements Connection {
                                 new BufferedInputStream(new GZIPInputStream(dataStream)) :
                                 new BufferedInputStream(dataStream);
 
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        if (Build.VERSION.SDK_INT < 14) {
                             bodyStream = new DoneHandlerInputStream(bodyStream);
                         }
 
