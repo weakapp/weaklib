@@ -18,10 +18,6 @@ import java.util.zip.GZIPInputStream;
 
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
-
-
-import com.squareup.okhttp.OkHttpClient;
 
 /**
  * Implementation of {@link Connection}.
@@ -445,7 +441,10 @@ public class HttpConnection implements Connection {
                     if (needsRedirect && req.followRedirects()) {
                         req.method(Method.GET); // always redirect with a get. any data param from original req are dropped.
                         req.data().clear();
-                        req.url(new URL(req.url(), res.header("Location")));
+
+                        /** fix empty space **/
+                        String s = res.header("Location").replace(" ", "%20");
+                        req.url(new URL(req.url(), s));
                         for (Map.Entry<String, String> cookie : res.cookies.entrySet()) { // add response cookies to request (for e.g. login posts)
                             req.cookie(cookie.getKey(), cookie.getValue());
                         }
@@ -540,16 +539,7 @@ public class HttpConnection implements Connection {
         // set up connection defaults, and details from request
         private static HttpURLConnection createConnection(Connection.Request req) throws IOException {
 
-            HttpURLConnection conn;
-
-            try {
-                Class.forName("com.squareup.okhttp.OkHttpClient");
-
-                OkHttpClient client = new OkHttpClient();
-                conn = client.open(req.url());
-            } catch (ClassNotFoundException e) {
-                conn = (HttpURLConnection)req.url().openConnection();
-            }
+            HttpURLConnection conn = (HttpURLConnection)req.url().openConnection();
 
             conn.setRequestMethod(req.method().name());
             conn.setInstanceFollowRedirects(false); // don't rely on native redirection support

@@ -16,5 +16,5 @@ android {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp:okhttp:1.2.1'
+    //compile 'com.squareup.okhttp:okhttp:1.2.1'
 }
