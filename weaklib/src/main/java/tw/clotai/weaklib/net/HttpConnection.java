@@ -443,7 +443,11 @@ public class HttpConnection implements Connection {
                         req.data().clear();
 
                         /** fix empty space **/
-                        String s = res.header("Location").replace(" ", "%20");
+                        String s = res.header("Location");
+                        s = s.replace(" ", "%20");
+                        s = s.replace("%&", "%25&");
+                        s = s.replace("%u", "%25u");
+                        s = s.replace("%0&", "%250&");
                         req.url(new URL(req.url(), s));
                         for (Map.Entry<String, String> cookie : res.cookies.entrySet()) { // add response cookies to request (for e.g. login posts)
                             req.cookie(cookie.getKey(), cookie.getValue());
@@ -585,7 +589,7 @@ public class HttpConnection implements Connection {
         	
             for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
                 String name = entry.getKey();
-                if (name == null) {
+                if ((name == null) || (name.trim().length() == 0)) {
                     continue; // http/1.1 line
                 }
 
