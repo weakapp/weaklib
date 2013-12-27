@@ -444,11 +444,13 @@ public class HttpConnection implements Connection {
 
                         /** fix empty space **/
                         String s = res.header("Location");
-                        s = s.replace(" ", "%20");
-                        s = s.replace("%&", "%25&");
-                        s = s.replace("%u", "%25u");
-                        s = s.replace("%0&", "%250&");
-                        req.url(new URL(req.url(), s));
+                        if (s != null) {
+                            s = s.replace(" ", "%20");
+                            s = s.replace("%&", "%25&");
+                            s = s.replace("%u", "%25u");
+                            s = s.replace("%0&", "%250&");
+                            req.url(new URL(req.url(), s));
+                        }
                         for (Map.Entry<String, String> cookie : res.cookies.entrySet()) { // add response cookies to request (for e.g. login posts)
                             req.cookie(cookie.getKey(), cookie.getValue());
                         }

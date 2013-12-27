@@ -1,20 +1,21 @@
-apply plugin: 'android-library'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
 
-repositories {
-    mavenCentral()
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.7.+'
+    }
 }
 
+apply plugin: 'android-library'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "18.1.1"
+    buildToolsVersion "19.0.0"
 
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 18
     }
-}
-
-dependencies {
-    //compile 'com.squareup.okhttp:okhttp:1.2.1'
 }
