@@ -59,7 +59,7 @@ public interface Connection {
      * @return this Connection, for chaining
      */
     public Connection followRedirects(boolean followRedirects);
-
+    public Connection nativeFollowRedirects(boolean nativeFollowRedirects);
     /**
      * Set the request method to use, GET or POST. Default is GET.
      * @param method HTTP request method
@@ -315,6 +315,8 @@ public interface Connection {
          */
         public boolean followRedirects();
 
+        public boolean nativeFollowRedirects();
+
         /**
          * Configures the request to (not) follow server redirects. By default this is <b>true</b>.
          *
@@ -322,6 +324,8 @@ public interface Connection {
          * @return this Request, for chaining
          */
         public Request followRedirects(boolean followRedirects);
+
+        public Request nativeFollowRedirects(boolean followRedirects);
 
         /**
          * Add a data parameter to the request

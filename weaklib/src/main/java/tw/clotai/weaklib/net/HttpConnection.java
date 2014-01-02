@@ -72,6 +72,11 @@ public class HttpConnection implements Connection {
         return this;
     }
 
+    public Connection nativeFollowRedirects(boolean nativeFollowRedirects) {
+        req.nativeFollowRedirects(nativeFollowRedirects);
+        return this;
+    }
+
     public Connection referrer(String referrer) {
         Validate.notNull(referrer, "Referrer must not be null");
         req.header("Referer", referrer);
@@ -309,6 +314,7 @@ public class HttpConnection implements Connection {
         private int timeoutMilliseconds;
         private int maxBodySizeBytes;
         private boolean followRedirects;
+        private boolean nativeFollowRedirects;
         private Collection<Connection.KeyVal> data;
         private String charset;
         
@@ -316,6 +322,7 @@ public class HttpConnection implements Connection {
             timeoutMilliseconds = 30000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
+            nativeFollowRedirects = true;
             data = new ArrayList<Connection.KeyVal>();
             method = Connection.Method.GET;
             headers.put("Accept-Encoding", "gzip");
@@ -356,8 +363,17 @@ public class HttpConnection implements Connection {
             return followRedirects;
         }
 
+        public boolean nativeFollowRedirects() {
+            return nativeFollowRedirects;
+        }
+
         public Connection.Request followRedirects(boolean followRedirects) {
             this.followRedirects = followRedirects;
+            return this;
+        }
+
+        public Connection.Request nativeFollowRedirects(boolean nativeFollowRedirects) {
+            this.nativeFollowRedirects = nativeFollowRedirects;
             return this;
         }
 
@@ -548,7 +564,7 @@ public class HttpConnection implements Connection {
             HttpURLConnection conn = (HttpURLConnection)req.url().openConnection();
 
             conn.setRequestMethod(req.method().name());
-            conn.setInstanceFollowRedirects(false); // don't rely on native redirection support
+            conn.setInstanceFollowRedirects(req.nativeFollowRedirects()); // don't rely on native redirection support
             conn.setConnectTimeout(req.timeout());
             conn.setReadTimeout(req.timeout());
             if (req.method() == Method.POST) {
