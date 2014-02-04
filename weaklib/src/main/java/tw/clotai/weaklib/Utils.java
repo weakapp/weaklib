@@ -2,8 +2,10 @@ package tw.clotai.weaklib;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
@@ -17,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -1078,5 +1081,35 @@ public class Utils {
         WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
         lp.screenBrightness = brightness * (1f / 255f);
         activity.getWindow().setAttributes(lp);
+    }
+
+    @TargetApi(11)
+    public static void hardwareAcceleration(Activity activity) {
+        if (Build.VERSION.SDK_INT < 11) {
+            return;
+        }
+        if (activity == null) {
+            return;
+        }
+        Window w = activity.getWindow();
+        if (w == null) {
+            return;
+        }
+
+        w.setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+    }
+
+    public static void openInBrowser(Context ctxt, String url) {
+        if (url == null) {
+            return;
+        }
+        try {
+            Uri uri = Uri.parse(url);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            i.setData(uri);
+            ctxt.startActivity(i);
+        } catch (ActivityNotFoundException e) {}
     }
 }
