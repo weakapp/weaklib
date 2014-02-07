@@ -70,11 +70,13 @@ public class Utils {
     @TargetApi(11)
     public static <T> void executeAsyncTask(AsyncTask<T, ?, ?> task,
                                             T... params) {
-        if (Build.VERSION.SDK_INT >= 11) {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
-        } else {
-            task.execute(params);
-        }
+        try {
+            if (Build.VERSION.SDK_INT >= 11) {
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+            } else {
+                task.execute(params);
+            }
+        } catch (java.util.concurrent.RejectedExecutionException e) {}
     }
 
     public static String encryptPass(String pass, String passphrase) {
