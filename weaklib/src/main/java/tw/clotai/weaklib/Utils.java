@@ -455,9 +455,9 @@ public class Utils {
                 if (callback != null) {
                     sleepcnt++;
                     ucnt += count;
-                    if ((sleepcnt % 10) == 0) {
+                    if ((sleepcnt % 5) == 0) {
                         callback.onProgress(ucnt);
-                        SystemClock.sleep(150);
+                        SystemClock.sleep(300);
                     }
                 }
             }
@@ -479,6 +479,8 @@ public class Utils {
             if (fos != null) {
                 fos.close();
             }
+
+            System.gc();
         }
     }
 

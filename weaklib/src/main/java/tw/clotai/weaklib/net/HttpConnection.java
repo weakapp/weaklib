@@ -18,6 +18,7 @@ import java.util.zip.GZIPInputStream;
 
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 /**
  * Implementation of {@link Connection}.
@@ -442,7 +443,6 @@ public class HttpConnection implements Connection {
                     if (req.method() == Connection.Method.POST) {
                         writePost(req.data(), conn.getOutputStream(), req.charset());
                     }
-
                     int status = conn.getResponseCode();
                     boolean needsRedirect = false;
                     if (status != HttpURLConnection.HTTP_OK) {
@@ -485,7 +485,6 @@ public class HttpConnection implements Connection {
                         if (Build.VERSION.SDK_INT < 14) {
                             bodyStream = new DoneHandlerInputStream(bodyStream);
                         }
-
                         if (req.charset() != null) {
                             res.resBody = DataUtil.readToString(bodyStream, req.charset());
                             res.charset = req.charset();
