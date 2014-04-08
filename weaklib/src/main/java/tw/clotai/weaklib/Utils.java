@@ -48,7 +48,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.io.Writer;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -76,7 +75,8 @@ public class Utils {
             } else {
                 task.execute(params);
             }
-        } catch (java.util.concurrent.RejectedExecutionException e) {}
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+        }
     }
 
     public static String encryptPass(String pass, String passphrase) {
@@ -213,12 +213,20 @@ public class Utils {
 
         while (it.hasNext()) {
             Entry<String, String> entry = (Entry<String, String>) (it.next());
-
             if (bFirst) {
                 bFirst = false;
-                sb.append(entry.getKey() + "=" + entry.getValue());
+                sb.append(entry.getKey());
+                if ((entry.getValue() == null) || (entry.getValue().trim().length() == 0)) {
+                    sb.append("; ");
+                } else {
+                    sb.append("=");
+                    sb.append(entry.getValue());
+                }
             } else {
-                sb.append("; " + entry.getKey() + "=" + entry.getValue());
+                sb.append("; ");
+                sb.append(entry.getKey());
+                sb.append("=");
+                sb.append(entry.getValue());
             }
         }
 
@@ -232,10 +240,17 @@ public class Utils {
 
         Map<String, String> map = new HashMap<String, String>();
 
+        int idx;
+        String name, value;
         String[] params = cookies.split("; ");
         for (String param : params) {
             String[] set = param.split("=");
-            if (set.length > 1) {
+            if (set.length > 2) {
+                idx = param.indexOf("=");
+                name = param.substring(0, idx);
+                value = param.substring(idx + 1, param.length());
+                map.put(name, value);
+            } else if (set.length > 1) {
                 map.put(set[0], set[1]);
             }
         }
@@ -332,7 +347,8 @@ public class Utils {
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
             File dataDir = new File(new File(
                     Environment.getExternalStorageDirectory(), "Android"),
-                    "data");
+                    "data"
+            );
 
             packageDir = new File(dataDir, c.getPackageName());
 
@@ -387,7 +403,8 @@ public class Utils {
         if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
             File dataDir = new File(new File(
                     Environment.getExternalStorageDirectory(), "Android"),
-                    "data");
+                    "data"
+            );
 
             packageDir = new File(dataDir, c.getPackageName());
 
@@ -431,6 +448,7 @@ public class Utils {
     public interface CopyToFileProgress {
         public void onProgress(int count);
     }
+
     public static void copyToFile(InputStream in, File dest) throws IOException {
         copyToFile(in, dest, null);
     }
@@ -1058,7 +1076,8 @@ public class Utils {
             nowBrightnessValue = android.provider.Settings.System.getInt(resolver,
                     android.provider.Settings.System.SCREEN_BRIGHTNESS,
                     -1);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return nowBrightnessValue;
     }
 
@@ -1114,6 +1133,7 @@ public class Utils {
             i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
             i.setData(uri);
             ctxt.startActivity(i);
-        } catch (ActivityNotFoundException e) {}
+        } catch (ActivityNotFoundException e) {
+        }
     }
 }
