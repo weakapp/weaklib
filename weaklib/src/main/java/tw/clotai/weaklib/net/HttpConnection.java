@@ -617,18 +617,18 @@ public class HttpConnection implements Connection {
                             continue;
 
                         List<HttpCookie> cookies = HttpCookie.parse(value);
-						for (HttpCookie cookie : cookies) {
+						for (HttpCookie c : cookies) {
 							
-							if (cookie.getDomain() == null) {
-								cookie.setDomain(domain);
+							if (c.getDomain() == null) {
+								c.setDomain(domain);
 							}
-							cookie(cookie);
+							cookie(c);
 
-							String cookiev = cookie.getValue();
+							String cookiev = c.getValue();
 							if (cookiev == null) {
 								cookiev = "";
 							}
-							cookie(cookie.getName(), cookie.getValue());
+							cookie(c.getName(), c.getValue());
 						}
 						
                     }
