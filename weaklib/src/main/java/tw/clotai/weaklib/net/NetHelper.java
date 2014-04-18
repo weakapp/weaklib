@@ -178,7 +178,7 @@ public class NetHelper {
         }
 
 		//Pattern p = Pattern.compile(";\\s*charset=\\s*([^\"]+)/?>");
-        Pattern p = Pattern.compile("text/html;\\s*charset=([^/\\s\"]+)[^>]*>");
+        Pattern p = Pattern.compile("text/html;\\s*charset=([^'/\\s\"]+)[^>]*>");
 		Matcher m = p.matcher(body);
 		if (m.find()) {
 			charset = m.group(1);

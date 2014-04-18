@@ -75,9 +75,9 @@ public class TrustManagerManipulator implements X509TrustManager {
 		try {
 			context = SSLContext.getInstance("TLS");
 			context.init(null, trustManagers, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
 		} catch (NoSuchAlgorithmException e) {
 		} catch (KeyManagementException e) {
 		}
-		HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
 	}
 }

@@ -192,10 +192,14 @@ public class HttpConnection implements Connection {
             Uri uri = Uri.parse(url.toExternalForm());
             int index = url.toExternalForm().lastIndexOf("/");
 			if (index > 7) {
-                this.baseURL = url.toExternalForm().substring(0, index+1);
+                this.baseURL = url.toExternalForm().substring(0, index);
 			} else {
                 this.baseURL = url.toExternalForm();
 			}
+
+            if (!this.baseURL.endsWith("/")) {
+                this.baseURL = this.baseURL() +"/";
+            }
 /*
             int index = url.toExternalForm().indexOf("?");
             if (index > 0) {
@@ -549,6 +553,7 @@ public class HttpConnection implements Connection {
                     if (charset == null) {
                         body = Charset.forName(DataUtil.defaultCharset).decode(byteData).toString();
                     } else {
+
                         body = Charset.forName(charset).decode(byteData).toString();
                     }
                     byteData.rewind();
