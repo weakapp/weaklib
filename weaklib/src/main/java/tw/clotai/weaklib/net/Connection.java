@@ -46,6 +46,7 @@ public interface Connection {
      */
     public Connection timeout(int millis);
 
+    public Connection useCache(boolean useCache);
     /**
      * Set the request referrer (aka "referer") header.
      * @param referrer referrer to use
@@ -296,6 +297,7 @@ public interface Connection {
          */
         public Request timeout(int millis);
 
+        public Request useCache(boolean usecache);
         /**
          * Get the maximum body size, in milliseconds.
          * @return the maximum body size, in milliseconds.

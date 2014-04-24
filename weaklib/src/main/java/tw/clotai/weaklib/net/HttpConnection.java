@@ -68,6 +68,11 @@ public class HttpConnection implements Connection {
         return this;
     }
 
+    public Connection useCache(boolean useCache) {
+        req.useCache(useCache);
+        return this;
+    }
+
     public Connection followRedirects(boolean followRedirects) {
         req.followRedirects(followRedirects);
         return this;
@@ -322,12 +327,14 @@ public class HttpConnection implements Connection {
         private boolean nativeFollowRedirects;
         private Collection<Connection.KeyVal> data;
         private String charset;
+        private boolean useCache;
         
       	private Request() {
             timeoutMilliseconds = 30000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
             nativeFollowRedirects = true;
+            useCache = false;
             data = new ArrayList<Connection.KeyVal>();
             method = Connection.Method.GET;
             headers.put("Accept-Encoding", "gzip");
@@ -351,6 +358,11 @@ public class HttpConnection implements Connection {
         public Request timeout(int millis) {
             Validate.isTrue(millis >= 0, "Timeout milliseconds must be 0 (infinite) or greater");
             timeoutMilliseconds = millis;
+            return this;
+        }
+
+        public Request useCache(boolean usecache) {
+            this.useCache = usecache;
             return this;
         }
 
