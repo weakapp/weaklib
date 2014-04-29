@@ -90,8 +90,10 @@ public class HttpConnection implements Connection {
     }
 
     public Connection referrer(String referrer) {
-        Validate.notNull(referrer, "Referrer must not be null");
-        req.header("Referer", referrer);
+        //Validate.notNull(referrer, "Referrer must not be null");
+        if (referrer != null) {
+            req.header("Referer", referrer);
+        }
         return this;
     }
 
@@ -340,7 +342,7 @@ public class HttpConnection implements Connection {
             timeoutMilliseconds = 30000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
-            nativeFollowRedirects = true;
+            nativeFollowRedirects = false;
             useCache = false;
             useproxy = null;
             data = new ArrayList<Connection.KeyVal>();
