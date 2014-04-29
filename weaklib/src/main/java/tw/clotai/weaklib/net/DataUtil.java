@@ -25,7 +25,7 @@ public class DataUtil {
     private DataUtil() {}
 
     static String readToString(InputStream inStream, String charset) throws IOException {
-    	String data = null;
+    	String data;
     	StringBuilder sb = new StringBuilder(2048);
     	BufferedReader br = null;
 		try {
@@ -73,8 +73,8 @@ public class DataUtil {
             }
             outStream.write(buffer, 0, read);
         }
-        ByteBuffer byteData = ByteBuffer.wrap(outStream.toByteArray());
-        return byteData;
+
+        return ByteBuffer.wrap(outStream.toByteArray());
     }
 
     static ByteBuffer readToByteBuffer(InputStream inStream) throws IOException {
