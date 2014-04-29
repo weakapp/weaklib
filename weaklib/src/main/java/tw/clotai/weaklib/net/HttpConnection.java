@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -83,6 +84,11 @@ public class HttpConnection implements Connection {
         return this;
     }
 
+    public Connection useProxy(Proxy useproxy) {
+        req.useProxy(useproxy);
+        return this;
+    }
+
     public Connection referrer(String referrer) {
         Validate.notNull(referrer, "Referrer must not be null");
         req.header("Referer", referrer);
@@ -135,7 +141,7 @@ public class HttpConnection implements Connection {
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
         req.header("User-Agent",
-        		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
+        		"Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.37");
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
@@ -143,7 +149,7 @@ public class HttpConnection implements Connection {
     public Connection.Response post() throws IOException {
         req.method(Method.POST);
         req.header("User-Agent", 
-        		"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.91 Safari/537.11");
+        		"Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.37");
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
@@ -325,6 +331,7 @@ public class HttpConnection implements Connection {
         private int maxBodySizeBytes;
         private boolean followRedirects;
         private boolean nativeFollowRedirects;
+        private Proxy useproxy;
         private Collection<Connection.KeyVal> data;
         private String charset;
         private boolean useCache;
@@ -335,6 +342,7 @@ public class HttpConnection implements Connection {
             followRedirects = true;
             nativeFollowRedirects = true;
             useCache = false;
+            useproxy = null;
             data = new ArrayList<Connection.KeyVal>();
             method = Connection.Method.GET;
             headers.put("Accept-Encoding", "gzip");
@@ -384,13 +392,22 @@ public class HttpConnection implements Connection {
             return nativeFollowRedirects;
         }
 
-        public Connection.Request followRedirects(boolean followRedirects) {
+        public Proxy useProxy() {
+            return this.useproxy;
+        }
+
+        public Request followRedirects(boolean followRedirects) {
             this.followRedirects = followRedirects;
             return this;
         }
 
-        public Connection.Request nativeFollowRedirects(boolean nativeFollowRedirects) {
+        public Request nativeFollowRedirects(boolean nativeFollowRedirects) {
             this.nativeFollowRedirects = nativeFollowRedirects;
+            return this;
+        }
+
+        public Request useProxy(Proxy proxy) {
+            this.useproxy = proxy;
             return this;
         }
 
@@ -576,8 +593,13 @@ public class HttpConnection implements Connection {
 
         // set up connection defaults, and details from request
         private static HttpURLConnection createConnection(Connection.Request req) throws IOException {
-
-            HttpURLConnection conn = (HttpURLConnection)req.url().openConnection();
+            HttpURLConnection conn;
+            Proxy proxy = req.useProxy();
+            if (proxy == null) {
+                conn = (HttpURLConnection)req.url().openConnection();
+            } else {
+                conn = (HttpURLConnection)req.url().openConnection(proxy);
+            }
 
             conn.setRequestMethod(req.method().name());
             conn.setInstanceFollowRedirects(req.nativeFollowRedirects()); // don't rely on native redirection support

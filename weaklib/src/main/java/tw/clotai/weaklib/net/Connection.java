@@ -1,6 +1,7 @@
 package tw.clotai.weaklib.net;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
@@ -61,6 +62,7 @@ public interface Connection {
      */
     public Connection followRedirects(boolean followRedirects);
     public Connection nativeFollowRedirects(boolean nativeFollowRedirects);
+    public Connection useProxy(Proxy useproxy);
     /**
      * Set the request method to use, GET or POST. Default is GET.
      * @param method HTTP request method
@@ -319,6 +321,8 @@ public interface Connection {
 
         public boolean nativeFollowRedirects();
 
+        public Proxy useProxy();
+
         /**
          * Configures the request to (not) follow server redirects. By default this is <b>true</b>.
          *
@@ -328,6 +332,8 @@ public interface Connection {
         public Request followRedirects(boolean followRedirects);
 
         public Request nativeFollowRedirects(boolean followRedirects);
+
+        public Request useProxy(Proxy useproxy);
 
         /**
          * Add a data parameter to the request
