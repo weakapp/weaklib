@@ -26,6 +26,9 @@ import android.util.Log;
  * @see org.jsoup.Jsoup#connect(String) 
  */
 public class HttpConnection implements Connection {
+
+    private final static String USER_AGENT = "Mozilla/5.0 (iPad; CPU OS 5_1 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B176 Safari/7534.48.3";
+
     public static Connection newInstance(String url) {
         Connection con = new HttpConnection();
 
@@ -142,16 +145,14 @@ public class HttpConnection implements Connection {
     
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
-        req.header("User-Agent",
-        		"Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.37");
+        req.header("User-Agent", USER_AGENT);
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
 
     public Connection.Response post() throws IOException {
         req.method(Method.POST);
-        req.header("User-Agent", 
-        		"Mozilla/5.0 (Linux; Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.37");
+        req.header("User-Agent", USER_AGENT);
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
