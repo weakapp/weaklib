@@ -62,6 +62,7 @@ public interface Connection {
      */
     public Connection followRedirects(boolean followRedirects);
     public Connection nativeFollowRedirects(boolean nativeFollowRedirects);
+    public Connection useragent(String agent);
     public Connection useProxy(Proxy useproxy);
     /**
      * Set the request method to use, GET or POST. Default is GET.
@@ -321,6 +322,8 @@ public interface Connection {
 
         public boolean nativeFollowRedirects();
 
+        public String useragent();
+
         public Proxy useProxy();
 
         /**
@@ -332,6 +335,8 @@ public interface Connection {
         public Request followRedirects(boolean followRedirects);
 
         public Request nativeFollowRedirects(boolean followRedirects);
+
+        public Request useragent(String agent);
 
         public Request useProxy(Proxy useproxy);
 

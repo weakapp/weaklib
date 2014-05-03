@@ -87,6 +87,11 @@ public class HttpConnection implements Connection {
         return this;
     }
 
+    public Connection useragent(String agent) {
+        req.useragent(agent);
+        return this;
+    }
+
     public Connection useProxy(Proxy useproxy) {
         req.useProxy(useproxy);
         return this;
@@ -145,14 +150,14 @@ public class HttpConnection implements Connection {
     
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
-        req.header("User-Agent", USER_AGENT);
+        req.header("User-Agent", req.useragent());
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
 
     public Connection.Response post() throws IOException {
         req.method(Method.POST);
-        req.header("User-Agent", USER_AGENT);
+        req.header("User-Agent", req.useragent());
         req.header("Accept-Language", "en-US,en;q=0.8");
         return execute();
     }
@@ -338,6 +343,8 @@ public class HttpConnection implements Connection {
         private Collection<Connection.KeyVal> data;
         private String charset;
         private boolean useCache;
+
+        private String agent;
         
       	private Request() {
             timeoutMilliseconds = 30000;
@@ -346,6 +353,7 @@ public class HttpConnection implements Connection {
             nativeFollowRedirects = false;
             useCache = false;
             useproxy = null;
+            agent = USER_AGENT;
             data = new ArrayList<Connection.KeyVal>();
             method = Connection.Method.GET;
             headers.put("Accept-Encoding", "gzip");
@@ -395,6 +403,10 @@ public class HttpConnection implements Connection {
             return nativeFollowRedirects;
         }
 
+        public String useragent() {
+            return agent;
+        }
+
         public Proxy useProxy() {
             return this.useproxy;
         }
@@ -406,6 +418,11 @@ public class HttpConnection implements Connection {
 
         public Request nativeFollowRedirects(boolean nativeFollowRedirects) {
             this.nativeFollowRedirects = nativeFollowRedirects;
+            return this;
+        }
+
+        public Request useragent(String agent);
+            this.agent = agent;
             return this;
         }
 
