@@ -421,7 +421,7 @@ public class HttpConnection implements Connection {
             return this;
         }
 
-        public Request useragent(String agent);
+        public Request useragent(String agent) {
             this.agent = agent;
             return this;
         }
