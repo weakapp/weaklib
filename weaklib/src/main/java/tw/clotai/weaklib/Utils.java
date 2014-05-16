@@ -618,12 +618,12 @@ public class Utils {
                         if (files[i].isDirectory()) {
                             delete(files[i], callback);
                         } else {
+                            if (callback != null) {
+                                callback.onProcessFile(files[i].getAbsolutePath());
+                            }
                             files[i].delete();
                         }
                     }
-                }
-                if (callback != null) {
-                    callback.onProcessFile(f.getAbsolutePath());
                 }
             }
             if (callback != null) {
