@@ -151,14 +151,18 @@ public class HttpConnection implements Connection {
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
         req.header("User-Agent", req.useragent());
-        req.header("Accept-Language", "en-US,en;q=0.8");
+		req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+		req.header("Accept-Encoding", "gzip, deflate");
+		req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         return execute();
     }
 
     public Connection.Response post() throws IOException {
         req.method(Method.POST);
         req.header("User-Agent", req.useragent());
-        req.header("Accept-Language", "en-US,en;q=0.8");
+		req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+		req.header("Accept-Encoding", "gzip, deflate");
+		req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         return execute();
     }
 
