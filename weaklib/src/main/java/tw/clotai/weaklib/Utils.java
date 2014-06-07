@@ -780,31 +780,23 @@ public class Utils {
     }
 
     public static void orientation_portrait_locked(Activity activity) {
-        if (activity == null) {
-            return;
-        }
-        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-        }
-        activity.setRequestedOrientation(orientation);
+        if (activity == null) return;
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     public static void orientation_landscape_locked(Activity activity) {
-        if (activity == null) {
-            return;
-        }
-        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int rotation = display.getRotation();
-        int orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (rotation == Surface.ROTATION_180 || rotation == Surface.ROTATION_90)
-                orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-            else
-                orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-        }
-        activity.setRequestedOrientation(orientation);
+        if (activity == null) return;
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+    }
+
+    public static void orientation_landscape_clockwise_locked(Activity activity) {
+        if (activity == null) return;
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+
+    public static void orientation_landscape_counterclockwise_locked(Activity activity) {
+        if (activity == null) return;
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
     }
 
     public static String getPrintStackString(Exception ex) {
