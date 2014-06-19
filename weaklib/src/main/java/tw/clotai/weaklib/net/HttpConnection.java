@@ -88,6 +88,7 @@ public class HttpConnection implements Connection {
     }
 
     public Connection useragent(String agent) {
+        if (agent == null) return this;
         req.useragent(agent);
         return this;
     }

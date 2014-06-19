@@ -1074,22 +1074,23 @@ public class Utils {
     }
 
     public static void autoBrightness(Activity activity, boolean auto) {
-        if (auto) {
-            ContentResolver resolver = activity.getContentResolver();
-            Settings.System.putInt(resolver,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
+        try {
+            if (auto) {
+                ContentResolver resolver = activity.getContentResolver();
+                Settings.System.putInt(resolver,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
 
             /*
             Uri uri = android.provider.Settings.System.getUriFor("screen_brightness");
             resolver.notifyChange(uri, null);
             */
-        } else {
-            Settings.System.putInt(activity.getContentResolver(),
-                    Settings.System.SCREEN_BRIGHTNESS_MODE,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-        }
-
+            } else {
+                Settings.System.putInt(activity.getContentResolver(),
+                        Settings.System.SCREEN_BRIGHTNESS_MODE,
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+            }
+        } catch (ClassCastException e) {}
     }
 
     public static void setBrightness(Activity activity, int brightness) {
