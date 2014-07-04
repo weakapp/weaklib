@@ -1,6 +1,14 @@
 package tw.clotai.weaklib.net;
 
-import java.io.*;
+import android.net.Uri;
+import android.os.Build;
+
+import java.io.BufferedInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -17,13 +25,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import android.net.Uri;
-import android.os.Build;
-import android.util.Log;
-
 /**
  * Implementation of {@link Connection}.
- * @see org.jsoup.Jsoup#connect(String) 
+ *
+ * @see org.jsoup.Jsoup#connect(String)
  */
 public class HttpConnection implements Connection {
 
@@ -47,7 +52,7 @@ public class HttpConnection implements Connection {
     private Connection.Request req;
     private Connection.Response res;
 
-	private HttpConnection() {
+    private HttpConnection() {
         req = new Request();
         res = new Response();
     }
@@ -143,27 +148,27 @@ public class HttpConnection implements Connection {
     }
 
     public Connection charset(String charset) {
-    	//Validate.notNull(charset, "Charset must not be null");
-    	req.charset(charset);
-    	return this;
+        //Validate.notNull(charset, "Charset must not be null");
+        req.charset(charset);
+        return this;
     }
-    
-    
+
+
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
         req.header("User-Agent", req.useragent());
-		req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-		req.header("Accept-Encoding", "gzip, deflate");
-		req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+        req.header("Accept-Encoding", "gzip, deflate");
+        req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         return execute();
     }
 
     public Connection.Response post() throws IOException {
         req.method(Method.POST);
         req.header("User-Agent", req.useragent());
-		req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-		req.header("Accept-Encoding", "gzip, deflate");
-		req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+        req.header("Accept-Encoding", "gzip, deflate");
+        req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         return execute();
     }
 
@@ -173,7 +178,6 @@ public class HttpConnection implements Connection {
     }
 
 
-    
     public Connection.Request request() {
         return req;
     }
@@ -194,7 +198,7 @@ public class HttpConnection implements Connection {
 
     @SuppressWarnings("unchecked")
     private static abstract class Base<T extends Connection.Base<T>> implements Connection.Base<T> {
-    	String baseURL;
+        String baseURL;
         URL url;
         Method method;
         Map<String, String> headers;
@@ -208,21 +212,21 @@ public class HttpConnection implements Connection {
         public URL url() {
             return url;
         }
-        
-		public T url(URL url) {
+
+        public T url(URL url) {
             Validate.notNull(url, "URL must not be null");
             this.url = url;
-            
+
             Uri uri = Uri.parse(url.toExternalForm());
             int index = url.toExternalForm().lastIndexOf("/");
-			if (index > 7) {
+            if (index > 7) {
                 this.baseURL = url.toExternalForm().substring(0, index);
-			} else {
+            } else {
                 this.baseURL = url.toExternalForm();
-			}
+            }
 
             if (!this.baseURL.endsWith("/")) {
-                this.baseURL = this.baseURL() +"/";
+                this.baseURL = this.baseURL() + "/";
             }
 /*
             int index = url.toExternalForm().indexOf("?");
@@ -236,9 +240,9 @@ public class HttpConnection implements Connection {
         }
 
         public String baseURL() {
-        	return baseURL;
+            return baseURL;
         }
-        
+
         public Method method() {
             return method;
         }
@@ -317,7 +321,7 @@ public class HttpConnection implements Connection {
             cookies.put(name, value);
             return (T) this;
         }
-        
+
         public T cookie(HttpCookie cookie) {
             Validate.notEmpty(cookie);
             return (T) this;
@@ -336,7 +340,7 @@ public class HttpConnection implements Connection {
 
         public Map<String, String> cookies() {
             return cookies;
-        }        
+        }
     }
 
     public static class Request extends Base<Connection.Request> implements Connection.Request {
@@ -350,8 +354,8 @@ public class HttpConnection implements Connection {
         private boolean useCache;
 
         private String agent;
-        
-      	private Request() {
+
+        private Request() {
             timeoutMilliseconds = 30000;
             maxBodySizeBytes = 1024 * 1024; // 1MB
             followRedirects = true;
@@ -367,16 +371,16 @@ public class HttpConnection implements Connection {
         public int timeout() {
             return timeoutMilliseconds;
         }
-        
+
         public String charset() {
-        	return this.charset;
+            return this.charset;
         }
-        
+
         public void charset(String charset) {
             if (charset == null) {
                 return;
             }
-        	this.charset = charset;
+            this.charset = charset;
         }
 
         public Request timeout(int millis) {
@@ -458,9 +462,9 @@ public class HttpConnection implements Connection {
         private String contentType;
         private boolean executed = false;
         private int numRedirects = 0;
-        
+
         @SuppressWarnings("unused")
-		private Connection.Request req;
+        private Connection.Request req;
 
         Response() {
             super();
@@ -474,7 +478,7 @@ public class HttpConnection implements Connection {
                     throw new IOException(String.format("Too many redirects occurred trying to load URL %s", previousResponse.url()));
             }
         }
-        
+
         static Response execute(Connection.Request req) throws IOException {
             return execute(req, null);
         }
@@ -490,10 +494,10 @@ public class HttpConnection implements Connection {
             if (req.method() == Connection.Method.GET && req.data().size() > 0) {
                 serialiseRequestUrl(req); // appends query string
             }
-            
+
             int retries = -1;
             Response res = null;
-            
+
             do {
                 HttpURLConnection conn = createConnection(req);
                 try {
@@ -504,9 +508,9 @@ public class HttpConnection implements Connection {
                     int status = conn.getResponseCode();
                     boolean needsRedirect = false;
                     if (status != HttpURLConnection.HTTP_OK) {
-                        if ((status == HttpURLConnection.HTTP_MOVED_TEMP) || 
-                        	(status == HttpURLConnection.HTTP_MOVED_PERM) || 
-                        	(status == HttpURLConnection.HTTP_SEE_OTHER)) {
+                        if ((status == HttpURLConnection.HTTP_MOVED_TEMP) ||
+                                (status == HttpURLConnection.HTTP_MOVED_PERM) ||
+                                (status == HttpURLConnection.HTTP_SEE_OTHER)) {
                             needsRedirect = true;
                         }
                     }
@@ -562,7 +566,7 @@ public class HttpConnection implements Connection {
                     conn = null;
                 }
             } while ((retries--) >= 0);
- 
+
             if (res != null) {
                 res.baseURL = req.baseURL();
                 res.executed = true;
@@ -581,7 +585,7 @@ public class HttpConnection implements Connection {
         public String charset() {
             return charset;
         }
-        
+
         public void charset(String charset) {
             if (charset == null) {
                 return;
@@ -589,7 +593,7 @@ public class HttpConnection implements Connection {
             if (preCharset == null) {
                 preCharset = this.charset;
             }
-        	this.charset = charset;
+            this.charset = charset;
         }
 
         public String contentType() {
@@ -620,10 +624,11 @@ public class HttpConnection implements Connection {
         private static HttpURLConnection createConnection(Connection.Request req) throws IOException {
             HttpURLConnection conn;
             Proxy proxy = req.useProxy();
+
             if (proxy == null) {
-                conn = (HttpURLConnection)req.url().openConnection();
+                conn = (HttpURLConnection) req.url().openConnection();
             } else {
-                conn = (HttpURLConnection)req.url().openConnection(proxy);
+                conn = (HttpURLConnection) req.url().openConnection(proxy);
             }
 
             conn.setRequestMethod(req.method().name());
@@ -665,9 +670,9 @@ public class HttpConnection implements Connection {
         }
 
         void processResponseHeaders(Map<String, List<String>> resHeaders) {
-        	String domain = Uri.parse(url.toExternalForm()).getHost();
-			String s;
-        	
+            String domain = Uri.parse(url.toExternalForm()).getHost();
+            String s;
+
             for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
                 String name = entry.getKey();
                 if ((name == null) || (name.trim().length() == 0)) {
@@ -681,27 +686,27 @@ public class HttpConnection implements Connection {
                             continue;
 
                         List<HttpCookie> cookies = HttpCookie.parse(value);
-						for (HttpCookie c : cookies) {
-							
-							if (c.getDomain() == null) {
-								c.setDomain(domain);
-							}
-							cookie(c);
+                        for (HttpCookie c : cookies) {
 
-							String cookiev = c.getValue();
-							if (cookiev == null) {
-								cookiev = "";
-							}
-							cookie(c.getName(), c.getValue());
-						}
-						
+                            if (c.getDomain() == null) {
+                                c.setDomain(domain);
+                            }
+                            cookie(c);
+
+                            String cookiev = c.getValue();
+                            if (cookiev == null) {
+                                cookiev = "";
+                            }
+                            cookie(c.getName(), c.getValue());
+                        }
+
                     }
                 } else { // only take the first instance of each header
                     if (!values.isEmpty()) {
-						s = values.get(0);
-						if (s == null || s.length() == 0) {
-							continue;
-						}
+                        s = values.get(0);
+                        if (s == null || s.length() == 0) {
+                            continue;
+                        }
                         header(name, s);
                     }
                 }
@@ -716,18 +721,18 @@ public class HttpConnection implements Connection {
             OutputStreamWriter w = new OutputStreamWriter(outputStream, postCharset);
             boolean first = true;
             for (Connection.KeyVal keyVal : data) {
-                if (!first) 
+                if (!first)
                     w.append('&');
                 else
                     first = false;
-                
+
                 w.write(URLEncoder.encode(keyVal.key(), postCharset));
                 w.write('=');
                 w.write(URLEncoder.encode(keyVal.value(), postCharset));
             }
             w.close();
         }
-        
+
         private static String getRequestCookieString(Connection.Request req) {
             StringBuilder sb = new StringBuilder();
             boolean first = true;
@@ -749,11 +754,11 @@ public class HttpConnection implements Connection {
             boolean first = true;
             // reconstitute the query, ready for appends
             url
-                .append(in.getProtocol())
-                .append("://")
-                .append(in.getAuthority()) // includes host, port
-                .append(in.getPath())
-                .append("?");
+                    .append(in.getProtocol())
+                    .append("://")
+                    .append(in.getAuthority()) // includes host, port
+                    .append(in.getPath())
+                    .append("?");
             if (in.getQuery() != null) {
                 url.append(in.getQuery());
                 first = false;
@@ -764,9 +769,9 @@ public class HttpConnection implements Connection {
                 else
                     first = false;
                 url
-                    .append(URLEncoder.encode(keyVal.key(), DataUtil.defaultCharset))
-                    .append('=')
-                    .append(URLEncoder.encode(keyVal.value(), DataUtil.defaultCharset));
+                        .append(URLEncoder.encode(keyVal.key(), DataUtil.defaultCharset))
+                        .append('=')
+                        .append(URLEncoder.encode(keyVal.value(), DataUtil.defaultCharset));
             }
             req.url(new URL(url.toString()));
             req.data().clear(); // moved into url as get params
@@ -811,7 +816,7 @@ public class HttpConnection implements Connection {
         @Override
         public String toString() {
             return key + "=" + value;
-        }      
+        }
     }
 
 
@@ -822,7 +827,8 @@ public class HttpConnection implements Connection {
             super(stream);
         }
 
-        @Override public int read(byte[] bytes, int offset, int count) throws IOException {
+        @Override
+        public int read(byte[] bytes, int offset, int count) throws IOException {
             if (!done) {
                 int result = super.read(bytes, offset, count);
                 if (result != -1) {
