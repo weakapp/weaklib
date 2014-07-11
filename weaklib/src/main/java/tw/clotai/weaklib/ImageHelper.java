@@ -23,7 +23,6 @@ public class ImageHelper {
 		options.inJustDecodeBounds = false;
 		options.inPurgeable = true;
 		options.inInputShareable = true;
-		options.inTempStorage = new byte[16 * 1024];
 		return options;
 	}
 	
@@ -54,10 +53,7 @@ public class ImageHelper {
 	
 	public static Bitmap decodeBitmap(InputStream in) {
 		BitmapFactory.Options options = ImageHelper.getDefaultOptions();
-		
-		Bitmap bitmap = BitmapFactory.decodeStream(in, null, options);
-		
-		return bitmap;
+		return BitmapFactory.decodeStream(in, null, options);
 	}
 	
 	public static Bitmap decodeBitmap(String imageFileStr, 
