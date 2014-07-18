@@ -691,7 +691,7 @@ public class HttpConnection implements Connection {
                             if (c.getDomain() == null) {
                                 c.setDomain(domain);
                             }
-                            cookie(c);
+                            //cookie(c);
 
                             String cookiev = c.getValue();
                             if (cookiev == null) {

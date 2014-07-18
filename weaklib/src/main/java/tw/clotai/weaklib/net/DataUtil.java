@@ -53,7 +53,7 @@ public class DataUtil {
      * @return the filled byte buffer
      * @throws IOException if an exception occurs whilst reading from the input stream.
      */
-    static ByteBuffer readToByteBuffer(InputStream inStream, int maxSize) throws IOException {
+    public static ByteBuffer readToByteBuffer(InputStream inStream, int maxSize) throws IOException {
         Validate.isTrue(maxSize >= 0, "maxSize must be 0 (unlimited) or larger");
         final boolean capped = maxSize > 0;
         byte[] buffer = new byte[bufferSize];
@@ -87,7 +87,7 @@ public class DataUtil {
      * @param contentType e.g. "text/html; charset=EUC-JP"
      * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
      */
-    static String getCharsetFromContentType(String contentType) {
+    public static String getCharsetFromContentType(String contentType) {
         if (contentType == null) return null;
         Matcher m = charsetPattern.matcher(contentType);
         if (m.find()) {
