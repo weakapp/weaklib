@@ -1,7 +1,5 @@
 package tw.clotai.weaklib.net;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,41 +13,42 @@ import java.util.regex.Pattern;
 
 /**
  * Internal static utilities for handling data.
- *
  */
 public class DataUtil {
     private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"/]*)/?>");
     static final String defaultCharset = "UTF-8"; // used if not found in header or meta charset
     private static final int bufferSize = 0x20000; // ~130K.
 
-    private DataUtil() {}
+    private DataUtil() {
+    }
 
     static String readToString(InputStream inStream, String charset) throws IOException {
-    	String data;
-    	StringBuilder sb = new StringBuilder(2048);
-    	BufferedReader br = null;
-		try {
-			br = new BufferedReader(new InputStreamReader(inStream, charset));
-			while ((data = br.readLine()) != null) {
-				sb.append(data);
-			}
-			sb.trimToSize();
-		} finally {
-			if (br != null) {
-				br.close();
-			}
-		}
+        String data;
+        StringBuilder sb = new StringBuilder(2048);
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(inStream, charset));
+            while ((data = br.readLine()) != null) {
+                sb.append(data);
+            }
+            sb.trimToSize();
+        } finally {
+            if (br != null) {
+                br.close();
+            }
+        }
         return sb.toString();
     }
-    
+
     static String readToString(InputStream inStream) throws IOException {
         return readToString(inStream, defaultCharset);
-    }    
-    
+    }
+
     /**
      * Read the input stream into a byte buffer.
+     *
      * @param inStream the input stream to read from
-     * @param maxSize the maximum size in bytes to read from the stream. Set to 0 to be unlimited.
+     * @param maxSize  the maximum size in bytes to read from the stream. Set to 0 to be unlimited.
      * @return the filled byte buffer
      * @throws IOException if an exception occurs whilst reading from the input stream.
      */
@@ -84,6 +83,7 @@ public class DataUtil {
     /**
      * Parse out a charset from a content type header. If the charset is not supported, returns null (so the default
      * will kick in.)
+     *
      * @param contentType e.g. "text/html; charset=EUC-JP"
      * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
      */
@@ -98,6 +98,6 @@ public class DataUtil {
         }
         return null;
     }
-    
-    
+
+
 }
