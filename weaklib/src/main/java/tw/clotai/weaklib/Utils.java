@@ -781,7 +781,17 @@ public class Utils {
 
     public static void orientation_portrait_locked(Activity activity) {
         if (activity == null) return;
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+    }
+
+    public static void orientation_0_portrait_locked(Activity activity) {
+        if (activity == null) return;
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    public static void orientation_180_portrait_locked(Activity activity) {
+        if (activity == null) return;
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
     }
 
     public static void orientation_landscape_locked(Activity activity) {
@@ -1090,7 +1100,8 @@ public class Utils {
                         Settings.System.SCREEN_BRIGHTNESS_MODE,
                         Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
             }
-        } catch (ClassCastException e) {}
+        } catch (ClassCastException e) {
+        }
     }
 
     public static void setBrightness(Activity activity, int brightness) {
