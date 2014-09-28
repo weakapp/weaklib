@@ -244,17 +244,12 @@ public class Utils {
         String name, value;
         String[] params = cookies.split("; ");
         for (String param : params) {
-            String[] set = param.split("=");
-            if (set.length > 2) {
-                idx = param.indexOf("=");
-                name = param.substring(0, idx);
-                value = param.substring(idx + 1, param.length());
-                map.put(name, value);
-            } else if (set.length > 1) {
-                map.put(set[0], set[1]);
-            }
+            idx = param.indexOf("=");
+            if (idx == 0) continue;
+            name = param.substring(0, idx);
+            value = param.substring(idx + 1, param.length());
+            map.put(name, value);
         }
-
         return map;
     }
 
