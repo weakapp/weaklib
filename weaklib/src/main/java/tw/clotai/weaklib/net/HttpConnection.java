@@ -673,6 +673,7 @@ public class HttpConnection implements Connection {
             String domain = Uri.parse(url.toExternalForm()).getHost();
             String s;
 
+            String cookiev;
             for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
                 String name = entry.getKey();
                 if ((name == null) || (name.trim().length() == 0)) {
@@ -688,16 +689,11 @@ public class HttpConnection implements Connection {
                         List<HttpCookie> cookies = HttpCookie.parse(value);
                         for (HttpCookie c : cookies) {
 
-                            if (c.getDomain() == null) {
-                                c.setDomain(domain);
-                            }
-                            //cookie(c);
+                            if (c.getDomain() == null) c.setDomain(domain);
 
-                            String cookiev = c.getValue();
-                            if (cookiev == null) {
-                                cookiev = "";
-                            }
-                            cookie(c.getName(), c.getValue());
+                            cookiev = c.getValue();
+                            if (cookiev == null) cookiev = "";
+                            cookie(c.getName(), cookiev);
                         }
 
                     }
