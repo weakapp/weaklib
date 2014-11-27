@@ -742,11 +742,18 @@ public class Utils {
         }
     }
 
-    public static void orientation_auto(Activity activity) {
+    public static void orientation_system(Activity activity) {
         if (activity == null) {
             return;
         }
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+    public static void orientation_auto(Activity activity) {
+        if (activity == null) {
+            return;
+        }
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     public static void orientation_locked(Activity activity) {
