@@ -205,6 +205,7 @@ public class Utils {
 
     @SuppressWarnings("unchecked")
     public static String cookiesStr(Map<String, String> cookies) {
+        if (cookies.size() == 0) return null;
         StringBuilder sb = new StringBuilder();
 
         boolean bFirst = true;
