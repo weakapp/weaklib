@@ -87,7 +87,7 @@ public class NetHelper {
         }
 
 		if (networkInfo == null) {
-			return ret;
+			return false;
 		}
 		if (networkInfo.isConnected()) {
             ret = true;
