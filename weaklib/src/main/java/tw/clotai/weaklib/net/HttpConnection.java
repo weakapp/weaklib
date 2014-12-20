@@ -511,7 +511,8 @@ public class HttpConnection implements Connection {
                     if (status != HttpURLConnection.HTTP_OK) {
                         if ((status == HttpURLConnection.HTTP_MOVED_TEMP) ||
                                 (status == HttpURLConnection.HTTP_MOVED_PERM) ||
-                                (status == HttpURLConnection.HTTP_SEE_OTHER)) {
+                                (status == HttpURLConnection.HTTP_SEE_OTHER) ||
+                                (status == 307)) {
                             needsRedirect = true;
                         }
                     }
