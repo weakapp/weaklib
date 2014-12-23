@@ -33,7 +33,8 @@ import java.util.zip.GZIPInputStream;
  */
 public class HttpConnection implements Connection {
 
-    private final static String USER_AGENT = "Mozilla/5.0 (iPad; CPU OS 5_1 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B176 Safari/7534.48.3";
+    //private final static String USER_AGENT = "Mozilla/5.0 (iPad; CPU OS 5_1 like Mac OS X; en-us) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B176 Safari/7534.48.3";
+    private final static String USER_AGENT = null;
 
     public static Connection newInstance(String url) {
         Connection con = new HttpConnection();
@@ -157,7 +158,9 @@ public class HttpConnection implements Connection {
 
     public Connection.Response get() throws IOException {
         req.method(Method.GET);
-        req.header("User-Agent", req.useragent());
+        if (req.useragent() != null) {
+            req.header("User-Agent", req.useragent());
+        }
         req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
         req.header("Accept-Encoding", "gzip, deflate");
         req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -166,7 +169,9 @@ public class HttpConnection implements Connection {
 
     public Connection.Response post() throws IOException {
         req.method(Method.POST);
-        req.header("User-Agent", req.useragent());
+        if (req.useragent() != null) {
+            req.header("User-Agent", req.useragent());
+        }
         req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
         req.header("Accept-Encoding", "gzip, deflate");
         req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
