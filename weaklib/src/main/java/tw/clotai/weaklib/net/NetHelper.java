@@ -1,5 +1,10 @@
 package tw.clotai.weaklib.net;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+
 import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
 import java.net.URLEncoder;
@@ -8,12 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.util.Log;
 
 public class NetHelper {
 
@@ -95,6 +94,16 @@ public class NetHelper {
 
 		return ret;
 	}
+
+    public static boolean isWifi(Context context) {
+        if (context == null) return false;
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo;
+
+        networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (networkInfo == null) return false;
+        return networkInfo.isConnected();
+    }
 	
 	public static String getEncodeURL(String url) {
 		StringBuilder sb = new StringBuilder();
