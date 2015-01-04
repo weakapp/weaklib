@@ -205,6 +205,7 @@ public class HttpConnection implements Connection {
     @SuppressWarnings("unchecked")
     private static abstract class Base<T extends Connection.Base<T>> implements Connection.Base<T> {
         String baseURL;
+        String oURL;
         URL url;
         Method method;
         Map<String, String> headers;
@@ -223,7 +224,6 @@ public class HttpConnection implements Connection {
             Validate.notNull(url, "URL must not be null");
             this.url = url;
 
-            Uri uri = Uri.parse(url.toExternalForm());
             int index = url.toExternalForm().lastIndexOf("/");
             if (index > 7) {
                 this.baseURL = url.toExternalForm().substring(0, index);
@@ -234,6 +234,8 @@ public class HttpConnection implements Connection {
             if (!this.baseURL.endsWith("/")) {
                 this.baseURL = this.baseURL() + "/";
             }
+            oURL = url.toExternalForm();
+
 /*
             int index = url.toExternalForm().indexOf("?");
             if (index > 0) {
@@ -247,6 +249,11 @@ public class HttpConnection implements Connection {
 
         public String baseURL() {
             return baseURL;
+        }
+
+        @Override
+        public String oURL() {
+            return oURL;
         }
 
         public Method method() {
@@ -534,7 +541,13 @@ public class HttpConnection implements Connection {
                             s = s.replace("%&", "%25&");
                             s = s.replace("%u", "%25u");
                             s = s.replace("%0&", "%250&");
-                            req.url(new URL(req.url(), s));
+
+                            Uri uri = Uri.parse(s);
+                            if (uri.isAbsolute()) {
+                                req.url(new URL(s));
+                            } else {
+                                req.url(new URL(req.url(), s));
+                            }
                         }
                         for (Map.Entry<String, String> cookie : res.cookies.entrySet()) { // add response cookies to request (for e.g. login posts)
                             req.cookie(cookie.getKey(), cookie.getValue());
@@ -576,6 +589,7 @@ public class HttpConnection implements Connection {
 
             if (res != null) {
                 res.baseURL = req.baseURL();
+                res.oURL = req.oURL();
                 res.executed = true;
             }
             return res;

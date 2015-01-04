@@ -191,7 +191,9 @@ public interface Connection {
         public T url(URL url);
 
         public String baseURL();
-        
+
+        public String oURL();
+
         /**
          * Get the request method
          * @return method
