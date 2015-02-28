@@ -63,7 +63,6 @@ public class CookieManager {
 			store.add(new URI(domain), cookie);
 		} catch (URISyntaxException e) {
 			Log.e(TAG, e.getMessage());
-			e.printStackTrace();
 		}
 	}
 	
@@ -89,12 +88,14 @@ public class CookieManager {
 			}
 		} catch (URISyntaxException e) {
 			Log.e(TAG, e.getMessage());
-			e.printStackTrace();
 		}
 	}
 	
 	/** Remove webview cookies **/
 	public void reset() {
+        CookieStore store = manager.getCookieStore();
+        store.removeAll();
+
 		android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
 	    cookieManager.removeAllCookie();
 	    CookieSyncManager.getInstance().sync();
@@ -112,21 +113,15 @@ public class CookieManager {
 
 		    android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
 		    cookieManager.removeExpiredCookie();
-		    
-		    
-		    StringBuilder sb = null;
-		 
+
 	        for (HttpCookie cookie: cookies) {
-	        	sb = new StringBuilder();
-	        	sb.append(cookie.getName() + "=" + cookie.getValue());
-	        	cookieManager.setCookie(domain, sb.toString());
+	        	cookieManager.setCookie(domain, cookie.getName() + "=" + cookie.getValue());
 	        }
 		    
 		    CookieSyncManager.getInstance().sync();  
 
 		} catch (URISyntaxException e) {
 			Log.e(TAG, e.getMessage());
-			e.printStackTrace();
 		}
 	}
 	
