@@ -2,7 +2,6 @@ package tw.clotai.weaklib.net;
 
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -508,84 +507,70 @@ public class HttpConnection implements Connection {
                 serialiseRequestUrl(req); // appends query string
             }
 
-            int retries = -1;
             Response res = null;
 
-            do {
-                HttpURLConnection conn = createConnection(req);
-                try {
-                    conn.connect();
-                    if (req.method() == Connection.Method.POST) {
-                        writePost(req.data(), conn.getOutputStream(), req.charset());
-                    }
-                    int status = conn.getResponseCode();
-                    boolean needsRedirect = false;
-                    if (status != HttpURLConnection.HTTP_OK) {
-                        if ((status == HttpURLConnection.HTTP_MOVED_TEMP) ||
-                                (status == HttpURLConnection.HTTP_MOVED_PERM) ||
-                                (status == HttpURLConnection.HTTP_SEE_OTHER) ||
-                                (status == 307)) {
-                            needsRedirect = true;
-                        }
-                    }
-                    res = new Response(previousResponse);
-                    res.setupFromConnection(conn, previousResponse);
-                    if (needsRedirect && req.followRedirects()) {
-                        req.method(Method.GET); // always redirect with a get. any data param from original req are dropped.
-                        req.data().clear();
-
-                        /** fix empty space **/
-                        String s = res.header("Location");
-                        if (s != null) {
-                            s = s.replace(" ", "%20");
-                            s = s.replace("%&", "%25&");
-                            s = s.replace("%u", "%25u");
-                            s = s.replace("%0&", "%250&");
-
-                            Uri uri = Uri.parse(s);
-                            if (uri.isAbsolute()) {
-                                req.url(new URL(s));
-                            } else {
-                                req.url(new URL(req.url(), s));
-                            }
-                        }
-                        for (Map.Entry<String, String> cookie : res.cookies.entrySet()) { // add response cookies to request (for e.g. login posts)
-                            req.cookie(cookie.getKey(), cookie.getValue());
-                        }
-                        return execute(req, res);
-                    }
-                    res.req = req;
-
-                    InputStream bodyStream = null;
-                    InputStream dataStream = null;
-                    try {
-                        dataStream = conn.getErrorStream() != null ? conn.getErrorStream() : conn.getInputStream();
-                        bodyStream = res.hasHeader("Content-Encoding") && res.header("Content-Encoding").equalsIgnoreCase("gzip") ?
-                                new BufferedInputStream(new GZIPInputStream(dataStream)) :
-                                new BufferedInputStream(dataStream);
-
-                        if (Build.VERSION.SDK_INT < 14) {
-                            bodyStream = new DoneHandlerInputStream(bodyStream);
-                        }
-                        if (req.charset() != null) {
-                            res.resBody = DataUtil.readToString(bodyStream, req.charset());
-                            res.charset = req.charset();
-                        } else {
-                            res.byteData = DataUtil.readToByteBuffer(bodyStream, req.maxBodySize());
-                            res.charset = DataUtil.getCharsetFromContentType(res.contentType); // may be null, readInputStream deals with it
-                        }
-                    } finally {
-                        if (bodyStream != null) bodyStream.close();
-                        if (dataStream != null) dataStream.close();
-                    }
-                    break;
-//                } catch (SocketTimeoutException e) {
-//                	e.printStackTrace();
-                } finally {
-                    conn.disconnect();
-                    conn = null;
+            HttpURLConnection conn = createConnection(req);
+            try {
+                conn.connect();
+                if (req.method() == Connection.Method.POST) {
+                    writePost(req.data(), conn.getOutputStream(), req.charset());
                 }
-            } while ((retries--) >= 0);
+                int status = conn.getResponseCode();
+                boolean needsRedirect = false;
+                if (status != HttpURLConnection.HTTP_OK) {
+                    if ((status == HttpURLConnection.HTTP_MOVED_TEMP) ||
+                            (status == HttpURLConnection.HTTP_MOVED_PERM) ||
+                            (status == HttpURLConnection.HTTP_SEE_OTHER) ||
+                            (status == 307)) {
+                        needsRedirect = true;
+                    }
+                }
+                res = new Response(previousResponse);
+                res.setupFromConnection(conn, previousResponse);
+                if (needsRedirect && req.followRedirects()) {
+                    req.method(Method.GET); // always redirect with a get. any data param from original req are dropped.
+                    req.data().clear();
+
+                    /** fix empty space **/
+                    String location = res.header("Location");
+                    if (location != null && location.startsWith("http:/") && location.charAt(6) != '/') // fix broken Location: http:/temp/AAG_New/en/index.php
+                        location = location.substring(6);
+                    req.url(new URL(req.url(), location));
+
+                    for (Map.Entry<String, String> cookie : res.cookies.entrySet()) { // add response cookies to request (for e.g. login posts)
+                        req.cookie(cookie.getKey(), cookie.getValue());
+                    }
+                    return execute(req, res);
+                }
+                res.req = req;
+
+                InputStream bodyStream = null;
+                InputStream dataStream = null;
+                try {
+                    dataStream = conn.getErrorStream() != null ? conn.getErrorStream() : conn.getInputStream();
+                    bodyStream = res.hasHeader("Content-Encoding") && res.header("Content-Encoding").equalsIgnoreCase("gzip") ?
+                            new BufferedInputStream(new GZIPInputStream(dataStream)) :
+                            new BufferedInputStream(dataStream);
+
+                    if (Build.VERSION.SDK_INT < 14) {
+                        bodyStream = new DoneHandlerInputStream(bodyStream);
+                    }
+                    if (req.charset() != null) {
+                        res.resBody = DataUtil.readToString(bodyStream, req.charset());
+                        res.charset = req.charset();
+                    } else {
+                        res.byteData = DataUtil.readToByteBuffer(bodyStream, req.maxBodySize());
+                        res.charset = DataUtil.getCharsetFromContentType(res.contentType); // may be null, readInputStream deals with it
+                    }
+                } finally {
+                    if (bodyStream != null) bodyStream.close();
+                    if (dataStream != null) dataStream.close();
+                }
+
+            } finally {
+                conn.disconnect();
+                conn = null;
+            }
 
             if (res != null) {
                 res.baseURL = req.baseURL();
@@ -856,227 +841,6 @@ public class HttpConnection implements Connection {
             }
             done = true;
             return -1;
-        }
-    }
-
-    static class MyCookieParser {
-        private static final String ATTRIBUTE_NAME_TERMINATORS = ",;= \t";
-        private static final String WHITESPACE = " \t";
-        private final String input;
-        private final String inputLowerCase;
-        private int pos = 0;
-
-        /*
-         * The cookie's version is set based on an overly complex heuristic:
-         * If it has an expires attribute, the version is 0.
-         * Otherwise, if it has a max-age attribute, the version is 1.
-         * Otherwise, if the cookie started with "Set-Cookie2", the version is 1.
-         * Otherwise, if it has any explicit version attributes, use the first one.
-         * Otherwise, the version is 0.
-         */
-        boolean hasExpires = false;
-        boolean hasMaxAge = false;
-        boolean hasVersion = false;
-
-        MyCookieParser(String input) {
-            this.input = input;
-            this.inputLowerCase = input.toLowerCase(Locale.US);
-        }
-
-        public List<HttpCookie> parse() {
-            List<HttpCookie> cookies = new ArrayList<HttpCookie>(2);
-
-            // The RI permits input without either the "Set-Cookie:" or "Set-Cookie2" headers.
-            boolean pre2965 = true;
-            if (inputLowerCase.startsWith("set-cookie2:")) {
-                pos += "set-cookie2:".length();
-                pre2965 = false;
-                hasVersion = true;
-            } else if (inputLowerCase.startsWith("set-cookie:")) {
-                pos += "set-cookie:".length();
-            }
-
-            /*
-             * Read a comma-separated list of cookies. Note that the values may contain commas!
-             *   <NAME> "=" <VALUE> ( ";" <ATTR NAME> ( "=" <ATTR VALUE> )? )*
-             */
-            while (true) {
-                String name = readAttributeName(false);
-                if (name == null) {
-                    if (cookies.isEmpty()) {
-                        throw new IllegalArgumentException("No cookies in " + input);
-                    }
-                    return cookies;
-                }
-
-                if (!readEqualsSign()) {
-                    throw new IllegalArgumentException(
-                            "Expected '=' after " + name + " in " + input);
-                }
-                String value = readAttributeValue(pre2965 ? ";" : ",;");
-
-                HttpCookie cookie = new HttpCookie(name, value);
-                cookie.setVersion(pre2965 ? 0 : 1);
-                cookies.add(cookie);
-
-                /*
-                 * Read the attributes of the current cookie. Each iteration of this loop should
-                 * enter with input either exhausted or prefixed with ';' or ',' as in ";path=/"
-                 * and ",COOKIE2=value2".
-                 */
-                while (true) {
-                    skipWhitespace();
-                    if (pos == input.length()) {
-                        break;
-                    }
-
-                    if (input.charAt(pos) == ',') {
-                        pos++;
-                        break; // a true comma delimiter; the current cookie is complete.
-                    } else if (input.charAt(pos) == ';') {
-                        pos++;
-                    }
-
-                    String attributeName = readAttributeName(true);
-                    if (attributeName == null) {
-                        continue; // for empty attribute as in "Set-Cookie: foo=Foo;;path=/"
-                    }
-
-                    /*
-                     * Since expires and port attributes commonly include comma delimiters, always
-                     * scan until a semicolon when parsing these attributes.
-                     */
-                    String terminators = pre2965
-                            || "expires".equals(attributeName) || "port".equals(attributeName)
-                            ? ";"
-                            : ";,";
-                    String attributeValue = null;
-                    if (readEqualsSign()) {
-                        attributeValue = readAttributeValue(terminators);
-                    }
-                    setAttribute(cookie, attributeName, attributeValue);
-                }
-
-                if (hasExpires) {
-                    cookie.setVersion(0);
-                } else if (hasMaxAge) {
-                    cookie.setVersion(1);
-                }
-            }
-        }
-
-        private void setAttribute(HttpCookie cookie, String name, String value) {
-            if (name.equals("comment") && cookie.getComment() == null) {
-                cookie.setComment(value);
-            } else if (name.equals("commenturl") && cookie.getCommentURL() == null) {
-                cookie.setCommentURL(value);
-            } else if (name.equals("discard")) {
-                cookie.setDiscard(true);
-            } else if (name.equals("domain") && cookie.getDomain() == null) {
-                cookie.setDomain(value);
-            } else if (name.equals("expires")) {
-                hasExpires = true;
-//                if (cookie.getMaxAge() == -1L) {
-//                    Date date = HttpDate.parse(value);
-//                    if (date != null) {
-//                        cookie.setExpires(date);
-//                    } else {
-//                        cookie.maxAge = 0;
-//                    }
-//                }
-            } else if (name.equals("max-age") && cookie.getMaxAge() == -1L) {
-                hasMaxAge = true;
-                cookie.setMaxAge(Long.parseLong(value));
-            } else if (name.equals("path") && cookie.getPath() == null) {
-                cookie.setPath(value);
-            } else if (name.equals("port") && cookie.getPortlist() == null) {
-                cookie.setPortlist(value != null ? value : "");
-            } else if (name.equals("secure")) {
-                cookie.setSecure(true);
-            } else if (name.equals("version") && !hasVersion) {
-                cookie.setVersion(Integer.parseInt(value));
-            }
-        }
-
-        /**
-         * Returns the next attribute name, or null if the input has been
-         * exhausted. Returns wth the cursor on the delimiter that follows.
-         */
-        private String readAttributeName(boolean returnLowerCase) {
-            skipWhitespace();
-            int c = find(ATTRIBUTE_NAME_TERMINATORS);
-            String forSubstring = returnLowerCase ? inputLowerCase : input;
-            String result = pos < c ? forSubstring.substring(pos, c) : null;
-            pos = c;
-            return result;
-        }
-
-        /**
-         * Returns true if an equals sign was read and consumed.
-         */
-        private boolean readEqualsSign() {
-            skipWhitespace();
-            if (pos < input.length() && input.charAt(pos) == '=') {
-                pos++;
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Reads an attribute value, by parsing either a quoted string or until
-         * the next character in {@code terminators}. The terminator character
-         * is not consumed.
-         */
-        private String readAttributeValue(String terminators) {
-            skipWhitespace();
-
-            /*
-             * Quoted string: read 'til the close quote. The spec mentions only "double quotes"
-             * but RI bug 6901170 claims that 'single quotes' are also used.
-             */
-            if (pos < input.length() && (input.charAt(pos) == '"' || input.charAt(pos) == '\'')) {
-                char quoteCharacter = input.charAt(pos++);
-
-                char bracketCharacter = input.charAt(pos);
-                if (bracketCharacter == '[') {
-                    // this is for 17K.
-                } else {
-                    int closeQuote = input.indexOf(quoteCharacter, pos);
-                    if (closeQuote == -1) {
-                        throw new IllegalArgumentException("Unterminated string literal in " + input);
-                    }
-                    String result = input.substring(pos, closeQuote);
-                    pos = closeQuote + 1;
-                    return result;
-                }
-            }
-
-            int c = find(terminators);
-            String result = input.substring(pos, c);
-            pos = c;
-            return result;
-        }
-
-        /**
-         * Returns the index of the next character in {@code chars}, or the end
-         * of the string.
-         */
-        private int find(String chars) {
-            for (int c = pos; c < input.length(); c++) {
-                if (chars.indexOf(input.charAt(c)) != -1) {
-                    return c;
-                }
-            }
-            return input.length();
-        }
-
-        private void skipWhitespace() {
-            for (; pos < input.length(); pos++) {
-                if (WHITESPACE.indexOf(input.charAt(pos)) == -1) {
-                    break;
-                }
-            }
         }
     }
 }
