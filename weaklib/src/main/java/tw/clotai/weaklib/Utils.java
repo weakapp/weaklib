@@ -233,7 +233,7 @@ public class Utils {
             return new HashMap<>();
         }
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         int idx;
         String name, value;

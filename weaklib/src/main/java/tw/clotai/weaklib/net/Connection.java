@@ -1,9 +1,11 @@
 package tw.clotai.weaklib.net;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -448,6 +450,11 @@ public interface Connection {
          */
         public String body();
 
+        public void cookie(HttpCookie c);
+
+        public void cookies(List<HttpCookie> cs);
+
+        public List<HttpCookie> hcookies();
     }
 
     /**

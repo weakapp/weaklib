@@ -123,7 +123,11 @@ public class MyCookieParser {
         } else if (name.equals("discard")) {
             cookie.setDiscard(true);
         } else if (name.equals("domain") && cookie.getDomain() == null) {
-            cookie.setDomain(value);
+            if (value.startsWith(".")) {
+                cookie.setDomain(value);
+            } else {
+                cookie.setDomain("." + value);
+            }
         } else if (name.equals("expires")) {
             hasExpires = true;
             if (cookie.getMaxAge() == -1L) {

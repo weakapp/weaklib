@@ -1,7 +1,6 @@
 package tw.clotai.weaklib.net;
 
 import android.os.Build;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -325,11 +324,6 @@ public class HttpConnection implements Connection {
             return (T) this;
         }
 
-        public T cookie(HttpCookie cookie) {
-            Validate.notEmpty(cookie);
-            return (T) this;
-        }
-
         public boolean hasCookie(String name) {
             Validate.notEmpty("Cookie name must not be empty");
             return cookies.containsKey(name);
@@ -465,16 +459,19 @@ public class HttpConnection implements Connection {
         private String contentType;
         private boolean executed = false;
         private int numRedirects = 0;
+        private List<HttpCookie> hcs = null;
 
         @SuppressWarnings("unused")
         private Connection.Request req;
 
         Response() {
             super();
+            hcs = new ArrayList<>();
         }
 
         private Response(Response previousResponse) throws IOException {
             super();
+            hcs = new ArrayList<>();
             if (previousResponse != null) {
                 numRedirects = previousResponse.numRedirects + 1;
                 if (numRedirects >= MAX_REDIRECTS)
@@ -617,6 +614,22 @@ public class HttpConnection implements Connection {
             }
         }
 
+        @Override
+        public void cookie(HttpCookie c) {
+            if (hcs.contains(c)) return;
+            hcs.add(c);
+        }
+
+        @Override
+        public void cookies(List<HttpCookie> cs) {
+            hcs.addAll(cs);
+        }
+
+        @Override
+        public List<HttpCookie> hcookies() {
+            return hcs;
+        }
+
         // set up connection defaults, and details from request
         private static HttpURLConnection createConnection(Connection.Request req) throws IOException {
             HttpURLConnection conn;
@@ -663,6 +676,11 @@ public class HttpConnection implements Connection {
                     if (!hasCookie(prevCookie.getKey()))
                         cookie(prevCookie.getKey(), prevCookie.getValue());
                 }
+                if (previousResponse.hcookies().size() > 0) {
+                    for (HttpCookie c : previousResponse.hcookies()) {
+                        cookie(c);
+                    }
+                }
             }
         }
 
@@ -682,7 +700,6 @@ public class HttpConnection implements Connection {
                         if (value == null)
                             continue;
 
-                        Log.e("TTTTT", "raw: " + value);
                         mCookieParser = new MyCookieParser(value);
                         cookies = mCookieParser.parse();
                         for (HttpCookie c : cookies) {
@@ -691,7 +708,8 @@ public class HttpConnection implements Connection {
                             cookiev = c.getValue();
                             if (cookiev == null) cookiev = "";
                             cookie(c.getName(), cookiev);
-                            Log.e("TTTTTTTT", c.getDomain() + ": " + c.getName() + " -> " + cookiev);
+                            c.setValue(cookiev);
+                            cookie(c);
                         }
                     }
                 } else { // only take the first instance of each header
