@@ -1,7 +1,7 @@
 package tw.clotai.weaklib.net;
 
-import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -211,8 +211,8 @@ public class HttpConnection implements Connection {
         Map<String, String> cookies;
 
         private Base() {
-            headers = new LinkedHashMap<String, String>();
-            cookies = new LinkedHashMap<String, String>();
+            headers = new LinkedHashMap<>();
+            cookies = new LinkedHashMap<>();
         }
 
         public URL url() {
@@ -234,15 +234,6 @@ public class HttpConnection implements Connection {
                 this.baseURL = this.baseURL() + "/";
             }
             oURL = url.toExternalForm();
-
-/*
-            int index = url.toExternalForm().indexOf("?");
-            if (index > 0) {
-                this.baseURL = url.toExternalForm().substring(0, index);
-            } else {
-                this.baseURL = url.toExternalForm();
-            }
-*/
             return (T) this;
         }
 
@@ -676,13 +667,10 @@ public class HttpConnection implements Connection {
         }
 
         void processResponseHeaders(Map<String, List<String>> resHeaders) {
-            String domain = Uri.parse(url.toExternalForm()).getHost();
-            String s;
-
             String cookiev;
             for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
                 String name = entry.getKey();
-                if ((name == null) || (name.trim().length() == 0)) {
+                if (name == null) {
                     continue; // http/1.1 line
                 }
 
@@ -691,28 +679,24 @@ public class HttpConnection implements Connection {
                     List<HttpCookie> cookies;
                     MyCookieParser mCookieParser;
                     for (String value : values) {
-                        if ((value == null) || (value.length() == 0))
+                        if (value == null)
                             continue;
 
+                        Log.e("TTTTT", "raw: " + value);
                         mCookieParser = new MyCookieParser(value);
                         cookies = mCookieParser.parse();
                         for (HttpCookie c : cookies) {
-
-                            if (c.getDomain() == null) c.setDomain(domain);
+                            if (c.hasExpired() || c.getDiscard()) continue;
 
                             cookiev = c.getValue();
                             if (cookiev == null) cookiev = "";
                             cookie(c.getName(), cookiev);
+                            Log.e("TTTTTTTT", c.getDomain() + ": " + c.getName() + " -> " + cookiev);
                         }
-
                     }
                 } else { // only take the first instance of each header
                     if (!values.isEmpty()) {
-                        s = values.get(0);
-                        if (s == null || s.length() == 0) {
-                            continue;
-                        }
-                        header(name, s);
+                        header(name, values.get(0));
                     }
                 }
             }

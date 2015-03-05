@@ -44,10 +44,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -205,15 +203,12 @@ public class Utils {
 
     @SuppressWarnings("unchecked")
     public static String cookiesStr(Map<String, String> cookies) {
-        if (cookies.size() == 0) return null;
+        if ((cookies == null) || (cookies.size() == 0)) return null;
         StringBuilder sb = new StringBuilder();
 
         boolean bFirst = true;
 
-        Iterator<?> it = cookies.entrySet().iterator();
-
-        while (it.hasNext()) {
-            Entry<String, String> entry = (Entry<String, String>) (it.next());
+        for (Map.Entry<String, String> entry : cookies.entrySet()) {
             if (bFirst) {
                 bFirst = false;
                 sb.append(entry.getKey());
@@ -230,13 +225,12 @@ public class Utils {
                 sb.append(entry.getValue());
             }
         }
-
         return sb.toString();
     }
 
     public static Map<String, String> cookiesMap(String cookies) {
         if (cookies == null) {
-            return new HashMap<String, String>();
+            return new HashMap<>();
         }
 
         Map<String, String> map = new HashMap<String, String>();

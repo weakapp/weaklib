@@ -151,10 +151,10 @@ public class NetHelper {
 		}
 	}
 
-	
+
 	public static Map<String, String> parseCookies(String url, Map<String, List<String>> resHeaders) {
     	Map<String, String> cookies_map = new HashMap<String, String>();
-    	
+
         for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
             String name = entry.getKey();
             if (name == null) {
@@ -171,7 +171,7 @@ public class NetHelper {
 					for (HttpCookie cookie : cookies) {
 						cookies_map.put(cookie.getName(), cookie.getValue());
 					}
-					
+
                 }
                 break;
             }
