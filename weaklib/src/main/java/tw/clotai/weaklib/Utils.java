@@ -108,19 +108,7 @@ public class Utils {
             }
             s = sb.toString();
 
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InvalidKeyException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (InvalidKeySpecException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (NoSuchPaddingException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (IllegalBlockSizeException e) {
-            Log.e(TAG, e.getMessage());
-        } catch (BadPaddingException e) {
+        } catch (IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getMessage());
         }
         return s;
@@ -152,25 +140,7 @@ public class Utils {
             byte[] plainTextPwdBytes = cipher.doFinal(epass);
             pw = new String(plainTextPwdBytes, "UTF8");
 
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
+        } catch (IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
@@ -201,7 +171,6 @@ public class Utils {
         return hashtext;
     }
 
-    @SuppressWarnings("unchecked")
     public static String cookiesStr(Map<String, String> cookies) {
         if ((cookies == null) || (cookies.size() == 0)) return null;
         StringBuilder sb = new StringBuilder();
@@ -532,8 +501,7 @@ public class Utils {
         }
 
         try {
-            String s = URLDecoder.decode(sb.toString(), "UTF-8");
-            return s;
+            return URLDecoder.decode(sb.toString(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -543,12 +511,8 @@ public class Utils {
 
 
     public static String replaceIllegalChars(String s) {
-        if (s == null) {
-            return s;
-        }
-        String t = s.replaceAll("[!\\?]", "");
-
-        return t;
+        if (s == null) return null;
+        return s.replaceAll("[!\\?]", "");
     }
 
     public static boolean isLandscape(Context ctxt) {
