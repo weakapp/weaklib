@@ -585,13 +585,15 @@ public class GifDecoder {
                 bgColor = 0;
             }
         }
+        if (act == null) {
+            status = STATUS_FORMAT_ERROR; // no color table defined
+            return;
+        }
+
         int save = 0;
         if (transparency) {
             save = act[transIndex];
             act[transIndex] = 0; // set transparent color if specified
-        }
-        if (act == null) {
-            status = STATUS_FORMAT_ERROR; // no color table defined
         }
         if (err()) {
             return;
