@@ -32,7 +32,6 @@ public class HttpUtil {
                 if (value == null)
                     continue;
 
-                Log.e("TTTTT", "raw: " + value);
                 mCookieParser = new MyCookieParser(value);
                 cookies = mCookieParser.parse();
                 for (HttpCookie c : cookies) {
@@ -42,8 +41,6 @@ public class HttpUtil {
                     if (cookiev == null) cookiev = "";
                     c.setValue(cookiev);
                     cs.add(c);
-
-                    Log.e("TTTTTTTT", c.getDomain() + ": " + c.getName() + " -> " + cookiev);
                 }
             }
         }
