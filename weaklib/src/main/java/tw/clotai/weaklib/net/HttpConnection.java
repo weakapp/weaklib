@@ -159,9 +159,6 @@ public class HttpConnection implements Connection {
         if (req.useragent() != null) {
             req.header("User-Agent", req.useragent());
         }
-        req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-        req.header("Accept-Encoding", "gzip, deflate");
-        req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         return execute();
     }
 
@@ -170,9 +167,6 @@ public class HttpConnection implements Connection {
         if (req.useragent() != null) {
             req.header("User-Agent", req.useragent());
         }
-        req.header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
-        req.header("Accept-Encoding", "gzip, deflate");
-        req.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         return execute();
     }
 
@@ -362,7 +356,10 @@ public class HttpConnection implements Connection {
             agent = USER_AGENT;
             data = new ArrayList<Connection.KeyVal>();
             method = Connection.Method.GET;
-            headers.put("Accept-Encoding", "gzip");
+
+            header("Accept-Language", "zh-tw,zh;q=0.8,en-us;q=0.5,en;q=0.3");
+            header("Accept-Encoding", "gzip, deflate");
+            header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         }
 
         public int timeout() {
