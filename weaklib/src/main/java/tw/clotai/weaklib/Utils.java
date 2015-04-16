@@ -1073,16 +1073,10 @@ public class Utils {
 
     @TargetApi(11)
     public static void hardwareAcceleration(Activity activity) {
-        if (Build.VERSION.SDK_INT < 11) {
-            return;
-        }
-        if (activity == null) {
-            return;
-        }
+        if (Build.VERSION.SDK_INT < 11) return;
+        if (activity == null) return;
         Window w = activity.getWindow();
-        if (w == null) {
-            return;
-        }
+        if (w == null) return;
 
         w.setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
