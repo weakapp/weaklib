@@ -446,7 +446,7 @@ public class HttpConnection implements Connection {
     }
 
     public static class Response extends Base<Connection.Response> implements Connection.Response {
-        private static final int MAX_REDIRECTS = 5;
+        private static final int MAX_REDIRECTS = 9;
         private int statusCode;
         private String statusMessage;
         private ByteBuffer byteData;
