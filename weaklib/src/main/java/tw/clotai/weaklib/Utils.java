@@ -235,6 +235,17 @@ public class Utils {
         return version;
     }
 
+    public static int version_code(Context context) {
+        int code;
+        try {
+            code = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), 0).versionCode;
+        } catch (NameNotFoundException e) {
+            code = -1;
+        }
+        return code;
+    }
+
     public static void deviceResolution(Context ctxt, int[] resolution) {
 
         Display d = ((WindowManager) ctxt
