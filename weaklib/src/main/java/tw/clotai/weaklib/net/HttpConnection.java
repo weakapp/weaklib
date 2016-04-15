@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 /**
  * Implementation of {@link Connection}.
@@ -480,6 +483,13 @@ public class HttpConnection implements Connection {
             return execute(req, null);
         }
 
+        static boolean isZlibHeader(byte[] bytes) {
+            //deal with java stupidity : convert to signed int before comparison
+            char byte1 = (char)(bytes[0] & 0xFF);
+            char byte2 = (char)(bytes[1] & 0xFF);
+            return byte1 == 0x78 && (byte2 == 0x01 || byte2 == 0x9c || byte2 == 0xDA);
+        }
+
         static Response execute(Connection.Request req, Response previousResponse) throws IOException {
             Validate.notNull(req, "Request must not be null");
             String protocol = req.url().getProtocol();
@@ -533,9 +543,16 @@ public class HttpConnection implements Connection {
                 InputStream dataStream = null;
                 try {
                     dataStream = conn.getErrorStream() != null ? conn.getErrorStream() : conn.getInputStream();
-                    bodyStream = res.hasHeader("Content-Encoding") && res.header("Content-Encoding").equalsIgnoreCase("gzip") ?
-                            new BufferedInputStream(new GZIPInputStream(dataStream)) :
-                            new BufferedInputStream(dataStream);
+                    if (res.hasHeader("Content-Encoding")) {
+                        String contentEncoding = res.header("Content-Encoding");
+                        if (contentEncoding.equalsIgnoreCase("gzip")) {
+                            bodyStream = new BufferedInputStream(new GZIPInputStream(dataStream));
+                        } else if (contentEncoding.equalsIgnoreCase("deflate")) {
+                            bodyStream = new BufferedInputStream(new InflaterInputStream(dataStream, new Inflater(true)));
+                        }
+                    }
+
+                    if (bodyStream == null) bodyStream = new BufferedInputStream(dataStream);
 
                     if (Build.VERSION.SDK_INT < 14) {
                         bodyStream = new DoneHandlerInputStream(bodyStream);
