@@ -209,7 +209,7 @@ public class Utils {
         String[] params = cookies.split("; ");
         for (String param : params) {
             idx = param.indexOf("=");
-            if (idx == 0) continue;
+            if (idx <= 0) continue;
             name = param.substring(0, idx);
             value = param.substring(idx + 1, param.length());
             map.put(name, value);
