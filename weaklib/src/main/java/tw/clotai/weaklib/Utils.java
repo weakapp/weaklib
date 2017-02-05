@@ -217,12 +217,16 @@ public class Utils {
         return map;
     }
 
-    public static void toast(Context ctxt, int res) {
-        Toast.makeText(ctxt, res, Toast.LENGTH_SHORT).show();
+    public static Toast toast(Context ctxt, int res) {
+        Toast toast = Toast.makeText(ctxt, res, Toast.LENGTH_SHORT);
+        toast.show();
+        return toast;
     }
 
-    public static void toast(Context ctxt, String s) {
-        Toast.makeText(ctxt, s, Toast.LENGTH_SHORT).show();
+    public static Toast toast(Context ctxt, String s) {
+        Toast toast = Toast.makeText(ctxt, s, Toast.LENGTH_SHORT);
+        toast.show();
+        return toast;
     }
 
     public static String version(Context context) {
