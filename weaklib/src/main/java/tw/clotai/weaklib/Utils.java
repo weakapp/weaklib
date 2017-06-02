@@ -1107,7 +1107,7 @@ public class Utils {
             i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
             i.setData(uri);
             ctxt.startActivity(i);
-        } catch (ActivityNotFoundException e) {
+        } catch (ActivityNotFoundException ignored) {
         }
     }
 }
