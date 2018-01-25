@@ -1098,13 +1098,11 @@ public class Utils {
     }
 
     public static void openInBrowser(Context ctxt, String url) {
-        if (url == null) {
-            return;
-        }
+        if (url == null) return;
         try {
             Uri uri = Uri.parse(url);
             Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.setData(uri);
             ctxt.startActivity(i);
         } catch (ActivityNotFoundException ignored) {
