@@ -23,7 +23,7 @@ public interface Connection {
     /**
      * GET and POST http methods.
      */
-    public enum Method {
+    enum Method {
         GET, POST
     }
 
@@ -33,7 +33,7 @@ public interface Connection {
      * @param url URL to connect to
      * @return this Connection, for chaining
      */
-    public Connection url(URL url);
+    Connection url(URL url);
 
     /**
      * Set the request URL to fetch. The protocol must be HTTP or HTTPS.
@@ -41,7 +41,7 @@ public interface Connection {
      * @param url URL to connect to
      * @return this Connection, for chaining
      */
-    public Connection url(String url);
+    Connection url(String url);
 
     /**
      * Set the request timeouts (connect and read). If a timeout occurs, an IOException will be thrown. The default
@@ -50,9 +50,9 @@ public interface Connection {
      * @param millis number of milliseconds (thousandths of a second) before timing out connects or reads.
      * @return this Connection, for chaining
      */
-    public Connection timeout(int millis);
+    Connection timeout(int millis);
 
-    public Connection useCache(boolean useCache);
+    Connection useCache(boolean useCache);
 
     /**
      * Set the request referrer (aka "referer") header.
@@ -60,7 +60,7 @@ public interface Connection {
      * @param referrer referrer to use
      * @return this Connection, for chaining
      */
-    public Connection referrer(String referrer);
+    Connection referrer(String referrer);
 
     /**
      * Configures the connection to (not) follow server redirects. By default this is <b>true</b>.
@@ -68,13 +68,13 @@ public interface Connection {
      * @param followRedirects true if server redirects should be followed.
      * @return this Connection, for chaining
      */
-    public Connection followRedirects(boolean followRedirects);
+    Connection followRedirects(boolean followRedirects);
 
-    public Connection nativeFollowRedirects(boolean nativeFollowRedirects);
+    Connection nativeFollowRedirects(boolean nativeFollowRedirects);
 
-    public Connection useragent(String agent);
+    Connection useragent(String agent);
 
-    public Connection useProxy(Proxy useproxy);
+    Connection useProxy(Proxy useproxy);
 
     /**
      * Set the request method to use, GET or POST. Default is GET.
@@ -82,7 +82,7 @@ public interface Connection {
      * @param method HTTP request method
      * @return this Connection, for chaining
      */
-    public Connection method(Method method);
+    Connection method(Method method);
 
     /**
      * Add a request data parameter. Request parameters are sent in the request query string for GETs, and in the request
@@ -92,7 +92,7 @@ public interface Connection {
      * @param value data value
      * @return this Connection, for chaining
      */
-    public Connection data(String key, String value);
+    Connection data(String key, String value);
 
     /**
      * Adds all of the supplied data to the request data parameters
@@ -100,7 +100,7 @@ public interface Connection {
      * @param data map of data parameters
      * @return this Connection, for chaining
      */
-    public Connection data(Map<String, String> data);
+    Connection data(Map<String, String> data);
 
     /**
      * Set a request header.
@@ -110,7 +110,7 @@ public interface Connection {
      * @return this Connection, for chaining
      * @see org.jsoup.Connection.Request#headers()
      */
-    public Connection header(String name, String value);
+    Connection header(String name, String value);
 
     /**
      * Set a cookie to be sent in the request.
@@ -119,7 +119,7 @@ public interface Connection {
      * @param value value of cookie
      * @return this Connection, for chaining
      */
-    public Connection cookie(String name, String value);
+    Connection cookie(String name, String value);
 
     /**
      * Adds each of the supplied cookies to the request.
@@ -127,9 +127,9 @@ public interface Connection {
      * @param cookies map of cookie name -> value pairs
      * @return this Connection, for chaining
      */
-    public Connection cookies(Map<String, String> cookies);
+    Connection cookies(Map<String, String> cookies);
 
-    public Connection charset(String charset);
+    Connection charset(String charset);
 
     /**
      * Execute the request as a GET, and parse the result.
@@ -140,7 +140,7 @@ public interface Connection {
      * @throws java.net.SocketTimeoutException if the connection times out
      * @throws IOException                     on error
      */
-    public Connection.Response get() throws IOException;
+    Connection.Response get() throws IOException;
 
     /**
      * Execute the request as a POST, and parse the result.
@@ -151,7 +151,7 @@ public interface Connection {
      * @throws java.net.SocketTimeoutException if the connection times out
      * @throws IOException                     on error
      */
-    public Connection.Response post() throws IOException;
+    Connection.Response post() throws IOException;
 
     /**
      * Execute the request.
@@ -163,14 +163,14 @@ public interface Connection {
      * @throws java.net.SocketTimeoutException if the connection times out
      * @throws IOException                     on error
      */
-    public Connection.Response execute() throws IOException;
+    Connection.Response execute() throws IOException;
 
     /**
      * Get the request object associated with this connection
      *
      * @return request
      */
-    public Request request();
+    Request request();
 
     /**
      * Set the connection's request
@@ -178,14 +178,14 @@ public interface Connection {
      * @param request new request object
      * @return this Connection, for chaining
      */
-    public Connection request(Request request);
+    Connection request(Request request);
 
     /**
      * Get the response, once the request has been executed
      *
      * @return response
      */
-    public Response response();
+    Response response();
 
     /**
      * Set the connection's response
@@ -193,7 +193,7 @@ public interface Connection {
      * @param response new response
      * @return this Connection, for chaining
      */
-    public Connection response(Response response);
+    Connection response(Response response);
 
 
     /**
@@ -208,7 +208,7 @@ public interface Connection {
          *
          * @return URL
          */
-        public URL url();
+        URL url();
 
         /**
          * Set the URL
@@ -216,18 +216,18 @@ public interface Connection {
          * @param url new URL
          * @return this, for chaining
          */
-        public T url(URL url);
+        T url(URL url);
 
-        public String baseURL();
+        String baseURL();
 
-        public String oURL();
+        String oURL();
 
         /**
          * Get the request method
          *
          * @return method
          */
-        public Method method();
+        Method method();
 
         /**
          * Set the request method
@@ -235,7 +235,7 @@ public interface Connection {
          * @param method new method
          * @return this, for chaining
          */
-        public T method(Method method);
+        T method(Method method);
 
         /**
          * Get the value of a header. This is a simplified header model, where a header may only have one value.
@@ -247,7 +247,7 @@ public interface Connection {
          * @see #hasHeader(String)
          * @see #cookie(String)
          */
-        public String header(String name);
+        String header(String name);
 
         /**
          * Set a header. This method will overwrite any existing header with the same case insensitive name.
@@ -256,7 +256,7 @@ public interface Connection {
          * @param value Value of header
          * @return this, for chaining
          */
-        public T header(String name, String value);
+        T header(String name, String value);
 
         /**
          * Check if a header is present
@@ -264,7 +264,7 @@ public interface Connection {
          * @param name name of header (case insensitive)
          * @return if the header is present in this request/response
          */
-        public boolean hasHeader(String name);
+        boolean hasHeader(String name);
 
         /**
          * Remove a header by name
@@ -272,14 +272,14 @@ public interface Connection {
          * @param name name of header to remove (case insensitive)
          * @return this, for chaining
          */
-        public T removeHeader(String name);
+        T removeHeader(String name);
 
         /**
          * Retrieve all of the request/response headers as a map
          *
          * @return headers
          */
-        public Map<String, String> headers();
+        Map<String, String> headers();
 
         /**
          * Get a cookie value by name from this request/response.
@@ -290,7 +290,7 @@ public interface Connection {
          * @param name name of cookie to retrieve.
          * @return value of cookie, or null if not set
          */
-        public String cookie(String name);
+        String cookie(String name);
 
         /**
          * Set a cookie in this request/response.
@@ -299,7 +299,7 @@ public interface Connection {
          * @param value value of cookie
          * @return this, for chaining
          */
-        public T cookie(String name, String value);
+        T cookie(String name, String value);
 
         /**
          * Check if a cookie is present
@@ -307,7 +307,7 @@ public interface Connection {
          * @param name name of cookie
          * @return if the cookie is present in this request/response
          */
-        public boolean hasCookie(String name);
+        boolean hasCookie(String name);
 
         /**
          * Remove a cookie by name
@@ -315,26 +315,26 @@ public interface Connection {
          * @param name name of cookie to remove
          * @return this, for chaining
          */
-        public T removeCookie(String name);
+        T removeCookie(String name);
 
         /**
          * Retrieve all of the request/response cookies as a map
          *
          * @return cookies
          */
-        public Map<String, String> cookies();
+        Map<String, String> cookies();
     }
 
     /**
      * Represents a HTTP request.
      */
-    public interface Request extends Base<Request> {
+    interface Request extends Base<Request> {
         /**
          * Get the request timeout, in milliseconds.
          *
          * @return the timeout in milliseconds.
          */
-        public int timeout();
+        int timeout();
 
         /**
          * Update the request timeout.
@@ -342,16 +342,16 @@ public interface Connection {
          * @param millis timeout, in milliseconds
          * @return this Request, for chaining
          */
-        public Request timeout(int millis);
+        Request timeout(int millis);
 
-        public Request useCache(boolean usecache);
+        Request useCache(boolean usecache);
 
         /**
          * Get the maximum body size, in milliseconds.
          *
          * @return the maximum body size, in milliseconds.
          */
-        public int maxBodySize();
+        int maxBodySize();
 
         /**
          * Update the maximum body size, in milliseconds.
@@ -359,20 +359,20 @@ public interface Connection {
          * @param bytes maximum body size, in milliseconds.
          * @return this Request, for chaining
          */
-        public Request maxBodySize(int bytes);
+        Request maxBodySize(int bytes);
 
         /**
          * Get the current followRedirects configuration.
          *
          * @return true if followRedirects is enabled.
          */
-        public boolean followRedirects();
+        boolean followRedirects();
 
-        public boolean nativeFollowRedirects();
+        boolean nativeFollowRedirects();
 
-        public String useragent();
+        String useragent();
 
-        public Proxy useProxy();
+        Proxy useProxy();
 
         /**
          * Configures the request to (not) follow server redirects. By default this is <b>true</b>.
@@ -380,13 +380,13 @@ public interface Connection {
          * @param followRedirects true if server redirects should be followed.
          * @return this Request, for chaining
          */
-        public Request followRedirects(boolean followRedirects);
+        Request followRedirects(boolean followRedirects);
 
-        public Request nativeFollowRedirects(boolean followRedirects);
+        Request nativeFollowRedirects(boolean followRedirects);
 
-        public Request useragent(String agent);
+        Request useragent(String agent);
 
-        public Request useProxy(Proxy useproxy);
+        Request useProxy(Proxy useproxy);
 
         /**
          * Add a data parameter to the request
@@ -394,73 +394,73 @@ public interface Connection {
          * @param keyval data to add.
          * @return this Request, for chaining
          */
-        public Request data(KeyVal keyval);
+        Request data(KeyVal keyval);
 
-        public String charset();
+        String charset();
 
-        public void charset(String charset);
+        void charset(String charset);
 
         /**
          * Get all of the request's data parameters
          *
          * @return collection of keyvals
          */
-        public Collection<KeyVal> data();
+        Collection<KeyVal> data();
     }
 
     /**
      * Represents a HTTP response.
      */
-    public interface Response extends Base<Response> {
+    interface Response extends Base<Response> {
 
         /**
          * Get the status code of the response.
          *
          * @return status code
          */
-        public int statusCode();
+        int statusCode();
 
         /**
          * Get the status message of the response.
          *
          * @return status message
          */
-        public String statusMessage();
+        String statusMessage();
 
         /**
          * Get the character set name of the response.
          *
          * @return character set name
          */
-        public String charset();
+        String charset();
 
-        public void charset(String charset);
+        void charset(String charset);
 
         /**
          * Get the response content type (e.g. "text/html");
          *
          * @return the response content type
          */
-        public String contentType();
+        String contentType();
 
         /**
          * Get the body of the response as a plain string.
          *
          * @return body
          */
-        public String body();
+        String body();
 
-        public void cookie(HttpCookie c);
+        void cookie(HttpCookie c);
 
-        public void cookies(List<HttpCookie> cs);
+        void cookies(List<HttpCookie> cs);
 
-        public List<HttpCookie> hcookies();
+        List<HttpCookie> hcookies();
     }
 
     /**
      * A Key Value tuple.
      */
-    public interface KeyVal {
+    interface KeyVal {
 
         /**
          * Update the key of a keyval
@@ -468,14 +468,14 @@ public interface Connection {
          * @param key new key
          * @return this KeyVal, for chaining
          */
-        public KeyVal key(String key);
+        KeyVal key(String key);
 
         /**
          * Get the key of a keyval
          *
          * @return the key
          */
-        public String key();
+        String key();
 
         /**
          * Update the value of a keyval
@@ -483,14 +483,14 @@ public interface Connection {
          * @param value the new value
          * @return this KeyVal, for chaining
          */
-        public KeyVal value(String value);
+        KeyVal value(String value);
 
         /**
          * Get the value of a keyval
          *
          * @return the value
          */
-        public String value();
+        String value();
     }
 
 }

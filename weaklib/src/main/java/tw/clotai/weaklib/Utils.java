@@ -39,6 +39,7 @@ import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -85,13 +86,13 @@ public class Utils {
         String s = pass;
         try {
             SecretKey key = null;
-            byte[] secretBytes = passphrase.getBytes("UTF8");
+            byte[] secretBytes = passphrase.getBytes(StandardCharsets.UTF_8);
 
             DESKeySpec keySpec = new DESKeySpec(secretBytes);
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
             key = keyFactory.generateSecret(keySpec);
 
-            byte[] cleartext = pass.getBytes("UTF8");
+            byte[] cleartext = pass.getBytes(StandardCharsets.UTF_8);
 
             Cipher cipher = Cipher.getInstance("DES");
 
@@ -108,7 +109,7 @@ public class Utils {
             }
             s = sb.toString();
 
-        } catch (IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getMessage());
         }
         return s;
@@ -129,7 +130,7 @@ public class Utils {
 
             SecretKey key = null;
 
-            byte[] secretBytes = passphrase.getBytes("UTF8");
+            byte[] secretBytes = passphrase.getBytes(StandardCharsets.UTF_8);
 
             DESKeySpec keySpec = new DESKeySpec(secretBytes);
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -138,9 +139,9 @@ public class Utils {
             Cipher cipher = Cipher.getInstance("DES");
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] plainTextPwdBytes = cipher.doFinal(epass);
-            pw = new String(plainTextPwdBytes, "UTF8");
+            pw = new String(plainTextPwdBytes, StandardCharsets.UTF_8);
 
-        } catch (IOException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
@@ -211,7 +212,7 @@ public class Utils {
             idx = param.indexOf("=");
             if (idx <= 0) continue;
             name = param.substring(0, idx);
-            value = param.substring(idx + 1, param.length());
+            value = param.substring(idx + 1);
             map.put(name, value);
         }
         return map;
@@ -420,7 +421,7 @@ public class Utils {
     }
 
     public interface CopyToFileProgress {
-        public void onProgress(int count);
+        void onProgress(int count);
     }
 
     public static void copyToFile(InputStream in, File dest) throws IOException {
@@ -532,10 +533,7 @@ public class Utils {
 
     public static boolean isLandscape(Context ctxt) {
         int orientation = ctxt.getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            return false;
-        }
-        return true;
+        return orientation != Configuration.ORIENTATION_PORTRAIT;
     }
 
     public static float getRealDimens(Context ctxt, int resId) {
@@ -562,15 +560,12 @@ public class Utils {
         }
 
         String s = type.toLowerCase(Locale.US);
-        if (s.contains("image")) {
-            return true;
-        }
-        return false;
+        return s.contains("image");
     }
 
 
     public interface OnProcessCallback {
-        public void onProcessFile(String fullpath);
+        void onProcessFile(String fullpath);
     }
 
     public static void delete(File f, OnProcessCallback callback) {
@@ -822,11 +817,7 @@ public class Utils {
             return false;
         }
 
-        if (task.getStatus() == AsyncTask.Status.FINISHED) {
-            return false;
-        }
-
-        return true;
+        return task.getStatus() != AsyncTask.Status.FINISHED;
     }
 
 

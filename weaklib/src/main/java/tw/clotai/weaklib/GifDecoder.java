@@ -116,11 +116,11 @@ public class GifDecoder {
         int i = 0;
 
 		if (count == 1) {
-			frame = (GifFrame) frames.elementAt(i);
+			frame = frames.elementAt(i);
 			bm = frame.image;
 		} else {
 			for (i = 0;i < count; i++) {
-				frame = (GifFrame) frames.elementAt(i);
+				frame = frames.elementAt(i);
 				if (frame.delay > delay) {
 					bm = frame.image;
 					delay = frame.delay;
@@ -236,7 +236,7 @@ public class GifDecoder {
         if (frameCount <= 0)
             return null;
         n = n % frameCount;
-        return ((GifFrame) frames.elementAt(n)).image;
+        return frames.elementAt(n).image;
     }
 
     /**

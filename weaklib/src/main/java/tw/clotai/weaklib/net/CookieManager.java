@@ -64,7 +64,6 @@ public class CookieManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void addCookies(String url, Map<String, String> cookies) {
         if ((url == null) || (cookies == null) || (cookies.size() == 0)) {
             return;

@@ -141,7 +141,7 @@ public class ImageHelper {
 									BitmapFactory.Options options, 
 									int[] reso, 
 									boolean bCrop) {
-		Bitmap ret[] = new Bitmap[2];
+        Bitmap[] ret = new Bitmap[2];
 		
 		Bitmap bitmap = null;
 		Bitmap newBitmap = null;
@@ -226,7 +226,7 @@ public class ImageHelper {
 	}
 
     public static Bitmap[] decodeRealSizeBitmap(String imageFileStr) {
-        Bitmap ret[] = new Bitmap[2];
+        Bitmap[] ret = new Bitmap[2];
 
         Bitmap bitmap = null;
         Bitmap newBitmap = null;
@@ -304,7 +304,7 @@ public class ImageHelper {
 
     public static Bitmap[] decodeBitmap(ZipFile zipFile, ZipEntry zipEntry,
                                         BitmapFactory.Options options, int[] reso, int pass, boolean bCrop) {
-        Bitmap ret[] = new Bitmap[2];
+        Bitmap[] ret = new Bitmap[2];
 
         Bitmap bitmap = null;
         Bitmap newBitmap = null;
